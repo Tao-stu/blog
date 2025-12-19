@@ -1,37 +1,46 @@
-# blog
+# 个人博客网站
 
-#### 介绍
-这是我的个人博客，更多更实用的文章分享
+这是一个使用HTML、CSS和JavaScript构建的个人博客网站。该项目具有现代化的设计风格，支持Markdown格式的文章展示，并提供良好的用户体验。
 
-#### 软件架构
-软件架构说明
+## 项目概述
 
+本项目是一个响应式的个人博客网站，具有以下特点：
 
-#### 安装教程
+- 现代化的深色主题设计，带有蓝色渐变效果
+- 响应式布局，适配不同屏幕尺寸
+- 支持Markdown格式的文章展示
+- 整块文章点击跳转功能
+- 优雅的动画效果和视觉反馈
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+## 主要功能模块
 
-#### 使用说明
+### 1. 首页 (index.html)
+- 展示博客文章列表
+- 导航栏和网站标题
+- 每个文章块都可以整块点击跳转到详情页
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+### 2. 文章详情页 (articles/test-article.html)
+- 展示完整的文章内容
+- 支持Markdown格式的各种元素（标题、列表、代码块、引用等）
+- 返回首页的导航按钮
 
-#### 参与贡献
+### 3. 样式文件
+- `style.css`: 主样式文件，定义了网站的整体外观
+- `articles/markdown.css`: 专门用于Markdown内容渲染的样式
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+## 使用说明
 
+1. 直接在浏览器中打开 `index.html` 文件即可浏览博客首页
+2. 点击任意文章块可跳转到文章详情页
+3. 在文章详情页可以通过"返回首页"按钮回到主页
 
-#### 特技
+## 文件结构
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+```
+.
+├── index.html              # 博客首页
+├── style.css               # 主样式文件
+└── articles/               # 文章相关文件
+    ├── test-article.html   # 测试文章页面
+    └── markdown.css        # Markdown样式文件
+```
