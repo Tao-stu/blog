@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试文章 - 我的个人博客</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="markdown.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>我的个人博客</h1>
+            <nav>
+                <span><a href="../index.html" class="no-underline">首页</a></span>
+            </nav>
+        </header>
+
+        <main>
+            <div class="messages-list">
+                <div class="messages-header">
+                    <h3>测试文章</h3>
+                    <a href="../index.html" class="btn">返回首页</a>
+                </div>
+
+                <div class="message-item">
+                    <div class="message-header">
+                        <span class="username">技术分享</span>
+                        <span class="time">2025-12-19 20:00</span>
+                    </div>
+                    <div class="message-content">
+                        <div class="markdown-content">
+                            <h1>Markdown格式测试文章</h1>
+
+                            <p>这是一篇用于测试Markdown格式的文章，展示了各种常见的Markdown元素如何在我们的博客系统中呈现。</p>
+
+                            <h2>标题测试</h2>
+
+                            <h3>二级标题</h3>
+
+                            <h4>三级标题</h4>
+
+                            <h2>文本样式</h2>
+
+                            <p>这是普通段落文本。<strong>这是粗体文本。</strong> <em>这是斜体文本。</em> <strong><em>这是粗体加斜体文本。</em></strong>
+                            </p>
+
+                            <p>这是一个包含<a href="#">链接的句子</a>，鼠标悬停时会有特殊效果。</p>
+
+                            <h2>列表测试</h2>
+
+                            <h3>无序列表</h3>
+
+                            <ul>
+                                <li>第一项</li>
+                                <li>第二项
+                                    <ul>
+                                        <li>子项1</li>
+                                        <li>子项2</li>
+                                    </ul>
+                                </li>
+                                <li>第三项</li>
+                            </ul>
+
+                            <h3>有序列表</h3>
+
+                            <ol>
+                                <li>第一步</li>
+                                <li>第二步</li>
+                                <li>第三步</li>
+                            </ol>
+
+                            <h2>代码测试</h2>
+
+                            <p>行内代码示例：<code>console.log('Hello World');</code></p>
+
+                            <p>代码块示例：</p>
+
+                            <p>我们还可以在代码中添加注释来解释复杂逻辑：</p>
+
+                            <pre><code>// JavaScript示例代码
+function greet(name) {
+    return `Hello, ${name}!`;
+}
+
+const message = greet('World');
+console.log(message);</code></pre>
+
+                            <h2>引用测试</h2>
+
+                            <blockquote>
+                                <p>这是引用文本。引用可以用来突出显示重要的观点或者他人的言论。</p>
+                                <p>—— 作者</p>
+                            </blockquote>
+
+                            <h2>分割线测试</h2>
+
+                            <hr>
+
+                            <h2>表格测试</h2>
+
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>姓名</th>
+                                        <th>年龄</th>
+                                        <th>城市</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>张三</td>
+                                        <td>25</td>
+                                        <td>北京</td>
+                                    </tr>
+                                    <tr>
+                                        <td>李四</td>
+                                        <td>30</td>
+                                        <td>上海</td>
+                                    </tr>
+                                    <tr>
+                                        <td>王五</td>
+                                        <td>28</td>
+                                        <td>广州</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="message-item">
+                    <div class="message-content">
+                        <p>以上就是本篇文章的全部内容。如果您有任何问题或建议，欢迎在评论区留言讨论。</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>
