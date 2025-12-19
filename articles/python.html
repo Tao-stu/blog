@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python 学习笔记 - 我的个人博客</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/markdown.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>我的个人博客</h1>
+            <nav>
+                <span><a href="../index.html" class="no-underline">首页</a></span>
+            </nav>
+        </header>
+
+        <main>
+            <div class="messages-list">
+                <div class="messages-header">
+                    <h3>Python 学习笔记</h3>
+                    <a href="../index.html" class="btn">返回首页</a>
+                </div>
+
+                <div class="message-item">
+                    <div class="message-header">
+                        <span class="username">技术分享</span>
+                        <span class="time">2025-12-20</span>
+                    </div>
+                    <div class="message-content">
+                        <div class="markdown-content">
+                            <h1>Python 学习笔记</h1>
+
+                            <h2>基础语法</h2>
+
+                            <h3>注释</h3>
+
+                            <pre><code class="language-python"># 单行注释
+
+"""
+多行注释
+可以写多行内容
+"""
+
+'''
+也是多行注释
+'''</code></pre>
+
+                            <h3>变量命名规则</h3>
+
+                            <pre><code class="language-python"># 合法的变量名
+name = "张三"
+user_name = "user123"
+_private_var = "私有变量"
+$special = "特殊变量"  # 不推荐
+
+# 非法变量名
+# 2name = "错误"     # 不能数字开头
+# user name = "错误"  # 不能有空格
+# class = "错误"      # 不能使用关键字</code></pre>
+
+                            <h3>数据类型</h3>
+
+                            <pre><code class="language-python"># 基本数据类型
+text = "Hello World"          # 字符串 str
+number = 42                   # 整数 int
+pi = 3.14159                  # 浮点数 float
+is_true = True                # 布尔值 bool
+empty_value = None            # 空值 NoneType
+
+# 检查数据类型
+print(type(text))      # &lt;class 'str'&gt;
+print(type(number))    # &lt;class 'int'&gt;
+print(type(is_true))   # &lt;class 'bool'&gt;
+print(type(empty_value))  # &lt;class 'NoneType'&gt;</code></pre>
+
+                            <h3>字符串操作</h3>
+
+                            <pre><code class="language-python"># 字符串创建
+single_quote = '单引号字符串'
+double_quote = "双引号字符串"
+multi_line = """多行
+字符串"""
+
+# 字符串操作
+text = "Hello World"
+print(len(text))              # 11 - 字符串长度
+print(text[0])                # H - 索引访问（从0开始）
+print(text[-1])               # d - 负索引
+print(text[0:5])              # Hello - 切片
+print(text.lower())           # hello world - 转小写
+print(text.upper())           # HELLO WORLD - 转大写
+print(text.replace("World", "Python"))  # Hello Python
+
+# 字符串格式化
+name = "张三"
+age = 25
+
+# 1. % 占位符（旧式）
+print("姓名：%s，年龄：%d" % (name, age))
+
+# 2. format 方法
+print("姓名：{0}，年龄：{1}".format(name, age))
+print("姓名：{name}，年龄：{age}".format(name=name, age=age))
+
+# 3. f-string（推荐）
+print(f"姓名：{name}，年龄：{age}")
+print(f"年龄：{age:.2f}")  # 保留两位小数</code></pre>
+
+                            <h3>数字运算</h3>
+
+                            <pre><code class="language-python"># 基本运算
+a, b = 10, 3
+print(a + b)    # 13 - 加法
+print(a - b)    # 7  - 减法
+print(a * b)    # 30 - 乘法
+print(a / b)    # 3.333... - 除法
+print(a // b)   # 3  - 整除
+print(a % b)    # 1  - 取余
+print(a ** b)   # 1000 - 幂运算
+
+# 数学函数
+import math
+print(math.pi)          # 3.14159...
+print(math.sqrt(16))     # 4.0 - 平方根
+print(math.ceil(3.2))    # 4 - 向上取整
+print(math.floor(3.8))   # 3 - 向下取整
+print(round(3.6))        # 4 - 四舍五入</code></pre>
+
+                            <h3>布尔运算</h3>
+
+                            <pre><code class="language-python"># 逻辑运算符
+x, y = True, False
+print(x and y)   # False - 逻辑与
+print(x or y)    # True  - 逻辑或
+print(not x)     # False - 逻辑非
+
+# 比较运算符
+a, b = 10, 20
+print(a == b)    # False - 等于
+print(a != b)    # True  - 不等于
+print(a &gt; b)     # False - 大于
+print(a &lt; b)     # True  - 小于
+print(a &gt;= b)    # False - 大于等于
+print(a &lt;= b)    # True  - 小于等于</code></pre>
+
+                            <h2>数据结构</h2>
+
+                            <h3>列表 (List)</h3>
+
+                            <pre><code class="language-python"># 创建列表
+fruits = ["苹果", "香蕉", "橙子"]
+numbers = [1, 2, 3, 4, 5]
+mixed = ["文本", 123, True, None]
+
+# 列表操作
+fruits.append("葡萄")        # 末尾添加元素
+fruits.insert(1, "草莓")     # 指定位置插入
+fruits.remove("香蕉")        # 删除指定元素
+popped = fruits.pop()        # 删除并返回末尾元素
+fruits.clear()               # 清空列表
+
+# 列表访问
+print(fruits[0])             # 第一个元素
+print(fruits[-1])            # 最后一个元素
+print(fruits[1:3])           # 切片
+
+# 列表方法
+print(len(fruits))           # 列表长度
+print(max(numbers))          # 最大值
+print(min(numbers))          # 最小值
+print(sum(numbers))          # 求和
+sorted_list = sorted(numbers) # 排序（不改变原列表）
+numbers.sort()               # 原地排序
+numbers.reverse()            # 反转列表
+
+# 列表推导式
+squares = [x**2 for x in range(10)]
+evens = [x for x in range(10) if x % 2 == 0]</code></pre>
+
+                            <h3>元组 (Tuple)</h3>
+
+                            <pre><code class="language-python"># 创建元组
+coordinates = (10, 20)
+single_element = (42,)      # 单元素元组需要逗号
+empty_tuple = ()
+
+# 元组特性
+# 元组不可变，不能添加、删除或修改元素
+print(coordinates[0])       # 10 - 访问元素
+print(coordinates[1:3])     # 切片
+
+# 元组方法
+print(len(coordinates))     # 长度
+print(coordinates.count(10)) # 元素出现次数
+print(coordinates.index(20)) # 元素索引
+
+# 元组解包
+x, y = coordinates
+print(x, y)  # 10 20</code></pre>
+
+                            <h3>字典 (Dictionary)</h3>
+
+                            <pre><code class="language-python"># 创建字典
+student = {
+    "name": "张三",
+    "age": 20,
+    "major": "计算机科学"
+}
+
+# 字典操作
+student["grade"] = "大三"           # 添加键值对
+student["age"] = 21                # 更新值
+del student["major"]                # 删除键值对
+
+# 访问字典
+print(student["name"])              # 张三
+print(student.get("name"))          # 张三（更安全）
+print(student.get("phone", "未知")) # 未知（默认值）
+
+# 字典方法
+print(student.keys())               # 所有键
+print(student.values())             # 所有值
+print(student.items())              # 所有键值对
+print("name" in student)           # True - 检查键是否存在
+print(student.pop("age"))           # 删除并返回值
+student.clear()                     # 清空字典
+
+# 字典推导式
+squares = {x: x**2 for x in range(5)}</code></pre>
+
+                            <h3>集合 (Set)</h3>
+
+                            <pre><code class="language-python"># 创建集合
+numbers = {1, 2, 3, 4, 5}
+letters = set("hello")             # {'h', 'e', 'l', 'o'}
+
+# 集合操作
+numbers.add(6)                     # 添加元素
+numbers.remove(1)                  # 删除元素
+numbers.discard(99)                # 安全删除（不存在也不报错）
+
+# 集合运算
+set1 = {1, 2, 3}
+set2 = {3, 4, 5}
+print(set1 | set2)                 # 并集 {1, 2, 3, 4, 5}
+print(set1 & set2)                 # 交集 {3}
+print(set1 - set2)                 # 差集 {1, 2}
+print(set1 ^ set2)                 # 对称差集 {1, 2, 4, 5}</code></pre>
+
+                            <h2>控制流程</h2>
+
+                            <h3>条件语句</h3>
+
+                            <pre><code class="language-python"># if-elif-else
+score = 85
+
+if score &gt;= 90:
+    print("优秀")
+elif score &gt;= 80:
+    print("良好")
+elif score &gt;= 60:
+    print("及格")
+else:
+    print("不及格")
+
+# 条件表达式（三元运算符）
+result = "及格" if score &gt;= 60 else "不及格"
+print(result)
+
+# 嵌套条件
+age = 20
+has_license = True
+
+if age &gt;= 18:
+    if has_license:
+        print("可以开车")
+    else:
+        print("需要先考驾照")
+else:
+    print("年龄不够")</code></pre>
+
+                            <h3>循环语句</h3>
+
+                            <pre><code class="language-python"># for 循环
+fruits = ["苹果", "香蕉", "橙子"]
+
+for fruit in fruits:
+    print(f"我喜欢{fruit}")
+
+# range() 函数
+for i in range(5):          # 0, 1, 2, 3, 4
+    print(i)
+
+for i in range(1, 6):       # 1, 2, 3, 4, 5
+    print(i)
+
+for i in range(0, 10, 2):   # 0, 2, 4, 6, 8
+    print(i)
+
+# while 循环
+count = 0
+while count &lt; 5:
+    print(f"计数：{count}")
+    count += 1
+
+# 循环控制
+for i in range(10):
+    if i == 3:
+        continue            # 跳过本次循环
+    if i == 7:
+        break               # 终止循环
+    print(i)
+
+# pass 语句（占位符）
+for i in range(5):
+    if i == 2:
+        pass                # 什么都不做，占位
+    else:
+        print(i)</code></pre>
+
+                            <h3>循环进阶</h3>
+
+                            <pre><code class="language-python"># enumerate() - 获取索引和值
+fruits = ["苹果", "香蕉", "橙子"]
+for index, fruit in enumerate(fruits):
+    print(f"{index}: {fruit}")
+
+# zip() - 同时遍历多个序列
+names = ["张三", "李四", "王五"]
+ages = [20, 25, 30]
+for name, age in zip(names, ages):
+    print(f"{name} 今年 {age} 岁")
+
+# 列表推导式与循环
+squares = []
+for i in range(10):
+    squares.append(i ** 2)
+print(squares)
+
+# 等价于列表推导式
+squares = [i ** 2 for i in range(10)]
+print(squares)</code></pre>
+
+                            <h2>函数</h2>
+
+                            <h3>函数定义与调用</h3>
+
+                            <pre><code class="language-python"># 基本函数定义
+def greet():
+    print("Hello, World!")
+
+# 带参数的函数
+def greet_person(name):
+    print(f"Hello, {name}!")
+
+# 带返回值的函数
+def add(a, b):
+    return a + b
+
+# 带默认参数的函数
+def greet_with_title(name, title="先生"):
+    return f"你好，{name}{title}"
+
+# 函数调用
+greet()                          # Hello, World!
+greet_person("张三")              # Hello, 张三!
+result = add(5, 3)               # 8
+print(greet_with_title("李四"))   # 你好，李四先生
+print(greet_with_title("王五", "女士"))  # 你好，王五女士</code></pre>
+
+                            <h3>函数参数</h3>
+
+                            <pre><code class="language-python"># 位置参数
+def describe_person(name, age, city):
+    return f"{name}，{age}岁，来自{city}"
+
+# 关键字参数
+result = describe_person(age=25, name="张三", city="北京")
+
+# 可变参数
+def sum_all(*numbers):
+    return sum(numbers)
+
+print(sum_all(1, 2, 3, 4, 5))    # 15
+
+# 关键字可变参数
+def print_info(**kwargs):
+    for key, value in kwargs.items():
+        print(f"{key}: {value}")
+
+print_info(name="张三", age=25, city="北京")</code></pre>
+
+                            <h3>作用域</h3>
+
+                            <pre><code class="language-python"># 局部变量和全局变量
+global_var = "全局变量"
+
+def test_scope():
+    local_var = "局部变量"
+    print(global_var)  # 可以访问全局变量
+    # print(local_var)  # 外部无法访问局部变量
+
+def modify_global():
+    global global_var  # 声明要修改全局变量
+    global_var = "修改后的全局变量"
+
+test_scope()
+print(global_var)
+modify_global()
+print(global_var)  # "修改后的全局变量"</code></pre>
+
+                            <h3>高阶函数</h3>
+
+                            <pre><code class="language-python"># 函数作为参数
+def apply_operation(func, x, y):
+    return func(x, y)
+
+def multiply(a, b):
+    return a * b
+
+result = apply_operation(multiply, 5, 3)  # 15
+
+# lambda 函数（匿名函数）
+square = lambda x: x ** 2
+print(square(5))  # 25
+
+# 内置高阶函数
+numbers = [1, 2, 3, 4, 5]
+squared = list(map(lambda x: x ** 2, numbers))     # [1, 4, 9, 16, 25]
+evens = list(filter(lambda x: x % 2 == 0, numbers)) # [2, 4]</code></pre>
+
+                            <h2>模块和包</h2>
+
+                            <h3>导入模块</h3>
+
+                            <pre><code class="language-python"># 1. 导入整个模块
+import math
+print(math.sqrt(16))
+
+# 2. 导入特定函数
+from math import sqrt, pi
+print(sqrt(25))
+print(pi)
+
+# 3. 导入所有函数（不推荐）
+from math import *
+print(sin(0))
+
+# 4. 给模块起别名
+import numpy as np
+import pandas as pd
+
+# 5. 给函数起别名
+from math import sqrt as square_root
+print(square_root(36))</code></pre>
+
+                            <h3>常用内置模块</h3>
+
+                            <pre><code class="language-python"># math 模块
+import math
+print(math.pi)           # 3.14159...
+print(math.factorial(5)) # 120
+
+# random 模块
+import random
+print(random.randint(1, 10))    # 1-10 随机整数
+print(random.choice(["A", "B", "C"]))  # 随机选择
+random.shuffle([1, 2, 3, 4, 5])  # 打乱列表
+
+# datetime 模块
+from datetime import datetime, date, timedelta
+now = datetime.now()
+print(now.strftime("%Y-%m-%d %H:%M:%S"))
+
+today = date.today()
+yesterday = today - timedelta(days=1)
+print(yesterday)
+
+# os 模块
+import os
+print(os.getcwd())        # 当前工作目录
+print(os.listdir("."))    # 当前目录文件列表
+
+# json 模块
+import json
+data = {"name": "张三", "age": 25}
+json_str = json.dumps(data)  # 转为JSON字符串
+parsed_data = json.loads(json_str)  # 解析JSON</code></pre>
+
+                            <h3>第三方包管理</h3>
+
+                            <pre><code class="language-bash"># 安装包
+pip install numpy
+pip install pandas matplotlib
+
+# 安装特定版本
+pip install numpy==1.21.0
+
+# 从文件安装
+pip install -r requirements.txt
+
+# 卸载包
+pip uninstall numpy
+
+# 查看已安装包
+pip list
+pip freeze
+
+# 升级包
+pip install --upgrade numpy</code></pre>
+
+                            <h2>文件操作</h2>
+
+                            <h3>基本文件读写</h3>
+
+                            <pre><code class="language-python"># 读取文件
+# 方法1：使用 with 语句（推荐）
+with open("example.txt", "r", encoding="utf-8") as file:
+    content = file.read()
+    print(content)
+
+# 方法2：手动打开和关闭
+file = open("example.txt", "r", encoding="utf-8")
+content = file.read()
+file.close()
+
+# 逐行读取
+with open("example.txt", "r", encoding="utf-8") as file:
+    for line in file:
+        print(line.strip())  # 去除换行符
+
+# 读取所有行
+with open("example.txt", "r", encoding="utf-8") as file:
+    lines = file.readlines()
+    print(lines)</code></pre>
+
+                            <h3>写入文件</h3>
+
+                            <pre><code class="language-python"># 写入文件（覆盖模式）
+with open("output.txt", "w", encoding="utf-8") as file:
+    file.write("Hello, World!\n")
+    file.write("这是第二行\n")
+
+# 追加模式
+with open("output.txt", "a", encoding="utf-8") as file:
+    file.write("这是追加的内容\n")
+
+# 写入多行
+lines = ["第一行\n", "第二行\n", "第三行\n"]
+with open("output.txt", "w", encoding="utf-8") as file:
+    file.writelines(lines)</code></pre>
+
+                            <h3>文件模式</h3>
+
+                            <pre><code class="language-python"># 文件打开模式
+"""
+'r'  - 只读（默认）
+'w'  - 写入（覆盖已存在文件）
+'a'  - 追加（在文件末尾添加）
+'r+' - 读写
+'b'  - 二进制模式（如 'rb', 'wb'）
+'t'  - 文本模式（默认）
+"""</code></pre>
+
+                            <h3>文件和目录操作</h3>
+
+                            <pre><code class="language-python">import os
+import shutil
+
+# 检查文件是否存在
+if os.path.exists("example.txt"):
+    print("文件存在")
+
+# 检查是否为文件/目录
+print(os.path.isfile("example.txt"))
+print(os.path.isdir("my_folder"))
+
+# 创建目录
+os.makedirs("my_folder/subfolder", exist_ok=True)
+
+# 删除文件
+os.remove("example.txt")
+
+# 删除目录
+os.rmdir("empty_folder")  # 只能删除空目录
+shutil.rmtree("folder_with_files")  # 删除非空目录
+
+# 复制文件
+shutil.copy("source.txt", "destination.txt")
+
+# 移动/重命名文件
+os.rename("old_name.txt", "new_name.txt")</code></pre>
+
+                            <h2>异常处理</h2>
+
+                            <h3>基本异常处理</h3>
+
+                            <pre><code class="language-python"># try-except 基本结构
+try:
+    num = int(input("请输入一个数字: "))
+    result = 10 / num
+    print(f"结果是: {result}")
+except ValueError:
+    print("输入的不是有效数字")
+except ZeroDivisionError:
+    print("不能除以零")
+except Exception as e:
+    print(f"发生了其他错误: {e}")
+
+# try-except-else-finally
+try:
+    file = open("example.txt", "r", encoding="utf-8")
+    content = file.read()
+except FileNotFoundError:
+    print("文件不存在")
+except Exception as e:
+    print(f"读取文件时出错: {e}")
+else:
+    print("文件读取成功")
+    print(content)
+finally:
+    if 'file' in locals():
+        file.close()
+    print("清理工作完成")</code></pre>
+
+                            <h3>自定义异常</h3>
+
+                            <pre><code class="language-python"># 自定义异常类
+class CustomError(Exception):
+    def __init__(self, message):
+        self.message = message
+        super().__init__(self.message)
+
+def validate_age(age):
+    if age &lt; 0:
+        raise CustomError("年龄不能为负数")
+    if age &gt; 150:
+        raise CustomError("年龄不能超过150")
+    return True
+
+try:
+    validate_age(-5)
+except CustomError as e:
+    print(f"验证错误: {e}")</code></pre>
+
+                            <h3>断言</h3>
+
+                            <pre><code class="language-python"># 断言用于调试和测试
+def divide(a, b):
+    assert b != 0, "除数不能为零"
+    return a / b
+
+# 启用断言检查
+def calculate_discount(price, discount_rate):
+    assert 0 &lt;= discount_rate &lt;= 1, "折扣率必须在0到1之间"
+    assert price &gt;= 0, "价格不能为负数"
+    return price * (1 - discount_rate)
+
+# 在生产环境中可以禁用断言
+# python -O script.py  # -O 参数会禁用断言</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="message-item">
+                    <div class="message-content">
+                        <p>以上就是本篇文章的全部内容。如果您有任何问题或建议，欢迎在评论区留言讨论。</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

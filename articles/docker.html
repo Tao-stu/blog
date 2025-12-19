@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docker 学习笔记 - 我的个人博客</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/markdown.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>我的个人博客</h1>
+            <nav>
+                <span><a href="../index.html" class="no-underline">首页</a></span>
+            </nav>
+        </header>
+
+        <main>
+            <div class="messages-list">
+                <div class="messages-header">
+                    <h3>🐳 Docker 学习笔记</h3>
+                    <a href="../index.html" class="btn">返回首页</a>
+                </div>
+
+                <div class="message-item">
+                    <div class="message-header">
+                        <span class="username">技术分享</span>
+                        <span class="time">2025-12-20</span>
+                    </div>
+                    <div class="message-content">
+                        <div class="markdown-content">
+                            <h2>🎯 学习目标</h2>
+                            <p>通过本笔记掌握Docker的核心概念、常用命令和实际应用场景，提升容器化部署能力。</p>
+                            <hr>
+                            <h2>📖 简介</h2>
+                            <p>Docker是一个开源的容器化平台，让开发者能够打包应用及其依赖包到一个可移植的容器中。</p>
+                            <h3>🔗 相关链接</h3>
+                            <ul>
+                                <li><a href="https://github.com/docker/docker">Docker GitHub仓库</a></li>
+                                <li><a href="https://hub.docker.com">Docker Hub镜像仓库</a></li>
+                            </ul>
+                            <hr>
+                            <h2>🚀 安装配置</h2>
+                            <h3>基础安装</h3>
+                            <pre><code class="language-bash">apt install docker.io</code></pre>
+                            <h3>配置镜像加速器</h3>
+                            <pre><code class="language-json">tee /etc/docker/daemon.json &lt;&lt;-'EOF'
+{
+    &quot;registry-mirrors&quot;: [
+     &quot;https://docker.m.daocloud.io&quot;,
+     &quot;https://docker.imgdb.de&quot;,
+     &quot;https://docker-0.unsee.tech&quot;,
+     &quot;https://docker.hlmirror.com&quot;,
+     &quot;https://docker.1ms.run&quot;,
+     &quot;https://func.ink&quot;,
+     &quot;https://lispy.org&quot;,
+     &quot;https://docker.xiaogenban1993.com&quot;
+    ]
+}
+EOF</code></pre>
+                            <h3>重启Docker服务</h3>
+                            <pre><code class="language-bash">systemctl daemon-reload
+systemctl restart docker</code></pre>
+                            <hr>
+                            <h2>⚡ 常用命令</h2>
+                            <h3>📦 镜像相关命令</h3>
+                            <h4>🔍 查看镜像</h4>
+                            <pre><code class="language-bash">docker images</code></pre>
+                            <p><strong>输出说明：</strong></p>
+                            <ul>
+                                <li><code>REPOSITORY</code>：镜像名称</li>
+                                <li><code>TAG</code>：镜像标签</li>
+                                <li><code>IMAGE ID</code>：镜像ID</li>
+                                <li><code>CREATED</code>：镜像的创建日期</li>
+                                <li><code>SIZE</code>：镜像大小</li>
+                            </ul>
+                            <h4>🔎 搜索镜像</h4>
+                            <pre><code class="language-bash">docker search 镜像名称</code></pre>
+                            <p><strong>输出说明：</strong></p>
+                            <ul>
+                                <li><code>NAME</code>：仓库名称</li>
+                                <li><code>DESCRIPTION</code>：镜像描述</li>
+                                <li><code>STARS</code>：下载数量</li>
+                                <li><code>OFFICAL</code>：是否官方</li>
+                                <li><code>AUTOMATED</code>：自动构建</li>
+                            </ul>
+                            <h4>⬇️ 拉取镜像</h4>
+                            <pre><code class="language-bash">docker pull 镜像名称</code></pre>
+                            <h4>🗑️ 删除镜像</h4>
+                            <pre><code class="language-bash"># 删除单个镜像
+docker rmi 镜像ID
+
+# 删除所有镜像
+docker rmi `docker images -q`</code></pre>
+                            <h3>🏗️ 容器相关命令</h3>
+                            <h4>👀 查看容器</h4>
+                            <pre><code class="language-bash"># 查看正在运行的容器
+docker ps
+
+# 查看全部容器
+docker ps -a
+
+# 查看最后一次运行的容器
+docker ps -f status=exited</code></pre>
+                            <h4>▶️ 启动容器</h4>
+                            <pre><code class="language-bash">docker run [参数] 镜像名:标签 [命令]</code></pre>
+                            <p><strong>常用参数：</strong></p>
+                            <ul>
+                                <li><code>-i</code>：表示运行容器</li>
+                                <li><code>-t</code>：表示进入命令行</li>
+                                <li><code>--name</code>：为创建的容器命名</li>
+                                <li><code>-d</code>：守护式容器（后台运行）</li>
+                                <li><code>-p</code>：映射端口</li>
+                            </ul>
+                            <p><strong>示例：</strong></p>
+                            <pre><code class="language-bash"># 交互式启动容器
+docker run -it --name=centos centos:7 /bin/bash
+
+# 守护式启动容器
+docker run -di --name=centos centos:7
+
+# 进入守护式容器
+docker exec -it 容器名称 /bin/bash</code></pre>
+                            <h4>🔄 容器管理</h4>
+                            <pre><code class="language-bash"># 停止容器
+docker stop 容器名/容器ID
+
+# 启动容器
+docker start 容器名/容器ID
+
+# 退出容器
+exit</code></pre>
+                            <h4>📁 文件传输</h4>
+                            <pre><code class="language-bash"># 从主机复制文件到容器
+docker cp 文件路径 容器ID/名称:容器内路径
+
+# 从容器复制文件到主机
+docker cp 容器ID/名称:容器内路径 主机路径</code></pre>
+                            <h4>📂 目录挂载</h4>
+                            <pre><code class="language-bash">docker run -di -v 主机目录:容器目录 --name=容器名称 镜像名</code></pre>
+                            <p><strong>示例：</strong></p>
+                            <pre><code class="language-bash">docker run -di -v /usr/local/test:/usr/local/test --name=test centos:7</code></pre>
+                            <h4>🗑️ 删除容器</h4>
+                            <pre><code class="language-bash">docker rm 容器ID/容器名称</code></pre>
+                            <hr>
+                            <h2>🌐 应用部署实战</h2>
+                            <h3>🗄️ MySQL部署</h3>
+                            <pre><code class="language-bash"># 拉取MySQL镜像
+docker pull mysql:5.7
+
+# 启动MySQL容器
+docker run -di --name=mysql \
+  -p 3306:3306 \
+  -e MYSQL_ROOT_PASSWORD=toor \
+  mysql:5.7</code></pre>
+                            <h3>🌍 Nginx部署</h3>
+                            <pre><code class="language-bash"># 拉取Nginx镜像
+docker pull nginx
+
+# 启动Nginx容器
+docker run -di --name=nginx -p 80:80 nginx
+
+# 带配置文件挂载的Nginx
+docker run -di --name=nginx \
+  -p 80:80 \
+  -v /usr/local/nginx:/etc/nginx \
+  nginx</code></pre>
+                            <h3>🔴 Redis部署</h3>
+                            <pre><code class="language-bash"># 拉取Redis镜像
+docker pull redis
+
+# 启动Redis容器
+docker run -di --name=redis -p 6379:6379 redis</code></pre>
+                            <h3>🐰 RabbitMQ部署</h3>
+                            <pre><code class="language-bash"># 拉取RabbitMQ镜像
+docker pull rabbitmq:3.7.12
+
+# 启动RabbitMQ容器
+docker run -di --name=rabbitmq \
+  -p 5671:5671 \
+  -p 5672:5672 \
+  -p 4369:4369 \
+  -p 25672:25672 \
+  -p 15671:15671 \
+  -p 15672:15672 \
+  rabbitmq:3.7.12
+
+# 进入容器启用管理插件
+docker exec -it rabbitmq /bin/bash
+rabbitmq-plugins enable rabbitmq_management</code></pre>
+                            <hr>
+                            <h2>💾 备份与迁移</h2>
+                            <h3>📦 容器保存为镜像</h3>
+                            <pre><code class="language-bash"># 将容器保存为新镜像
+docker commit 容器名 新镜像名
+
+# 导出镜像到文件
+docker save -o 镜像名.tar 镜像名
+
+# 从文件导入镜像
+docker load -i 镜像名.tar</code></pre>
+                            <hr>
+                            <h2>📝 Dockerfile</h2>
+                            <p>Dockerfile是一个文本文件，包含了一系列指令，用于自动构建Docker镜像。</p>
+                            <h3>🏗️ 基本语法</h3>
+                            <pre><code class="language-dockerfile"># 基础镜像
+FROM 镜像名:标签
+
+# 维护者信息
+MAINTAINER 作者 &lt;邮箱&gt;
+
+# 设置工作目录
+WORKDIR /app
+
+# 复制文件
+COPY 源路径 目标路径
+
+# 添加文件（支持解压）
+ADD 源文件 目标路径
+
+# 运行命令
+RUN 命令
+
+# 设置环境变量
+ENV 键=值
+
+# 暴露端口
+EXPOSE 端口号
+
+# 容器启动命令
+CMD [&quot;命令&quot;, &quot;参数1&quot;, &quot;参数2&quot;]
+
+# 入口点
+ENTRYPOINT [&quot;命令&quot;, &quot;参数1&quot;]</code></pre>
+                            <h3>📋 常用指令详解</h3>
+                            <h4>FROM - 基础镜像</h4>
+                            <pre><code class="language-dockerfile">FROM ubuntu:20.04
+FROM node:16-alpine</code></pre>
+                            <h4>WORKDIR - 工作目录</h4>
+                            <pre><code class="language-dockerfile">WORKDIR /app
+# 相当于 cd /app</code></pre>
+                            <h4>COPY vs ADD</h4>
+                            <pre><code class="language-dockerfile"># COPY - 简单复制文件
+COPY ./app.js /app/
+COPY ./package*.json ./
+
+# ADD - 支持URL和解压
+ADD https://example.com/file.tar.gz /tmp/
+ADD app.tar.gz /app/  # 自动解压</code></pre>
+                            <h4>RUN - 执行命令</h4>
+                            <pre><code class="language-dockerfile">RUN apt-get update &amp;&amp; apt-get install -y \
+    curl \
+    vim \
+    &amp;&amp; rm -rf /var/lib/apt/lists/*
+
+RUN npm install</code></pre>
+                            <h4>ENV - 环境变量</h4>
+                            <pre><code class="language-dockerfile">ENV NODE_ENV=production
+ENV APP_VERSION=1.0.0</code></pre>
+                            <h4>EXPOSE - 暴露端口</h4>
+                            <pre><code class="language-dockerfile">EXPOSE 3000
+EXPOSE 8080</code></pre>
+                            <h4>CMD vs ENTRYPOINT</h4>
+                            <pre><code class="language-dockerfile"># CMD - 可以被docker run覆盖
+CMD [&quot;node&quot;, &quot;app.js&quot;]
+
+# ENTRYPOINT - 固定入口点
+ENTRYPOINT [&quot;node&quot;]
+CMD [&quot;app.js&quot;]  # 作为ENTRYPOINT的参数</code></pre>
+                            <h3>🎯 实战示例</h3>
+                            <h4>Node.js应用Dockerfile</h4>
+                            <pre><code class="language-dockerfile">FROM node:16-alpine
+
+# 设置工作目录
+WORKDIR /app
+
+# 复制package文件
+COPY package*.json ./
+
+# 安装依赖
+RUN npm ci --only=production
+
+# 复制应用代码
+COPY . .
+
+# 创建非root用户
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nodejs -u 1001
+
+# 更改文件所有者
+RUN chown -R nodejs:nodejs /app
+USER nodejs
+
+# 暴露端口
+EXPOSE 3000
+
+# 健康检查
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:3000/health || exit 1
+
+# 启动应用
+CMD [&quot;node&quot;, &quot;app.js&quot;]</code></pre>
+                            <h4>Python应用Dockerfile</h4>
+                            <pre><code class="language-dockerfile">FROM python:3.9-slim
+
+WORKDIR /app
+
+# 安装系统依赖
+RUN apt-get update &amp;&amp; apt-get install -y \
+    gcc \
+    &amp;&amp; rm -rf /var/lib/apt/lists/*
+
+# 复制requirements文件
+COPY requirements.txt .
+
+# 安装Python依赖
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 复制应用代码
+COPY . .
+
+# 暴露端口
+EXPOSE 8000
+
+# 启动应用
+CMD [&quot;python&quot;, &quot;app.py&quot;]</code></pre>
+                            <h4>多阶段构建</h4>
+                            <pre><code class="language-dockerfile"># 构建阶段
+FROM node:16-alpine AS builder
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+# 生产阶段
+FROM nginx:alpine
+
+# 复制构建结果
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# 复制nginx配置
+COPY nginx.conf /etc/nginx/nginx.conf
+
+EXPOSE 80
+
+CMD [&quot;nginx&quot;, &quot;-g&quot;, &quot;daemon off;&quot;]</code></pre>
+                            <h3>🔧 构建镜像</h3>
+                            <pre><code class="language-bash"># 构建镜像
+docker build -t 镜像名:标签 .
+
+# 构建时指定Dockerfile
+docker build -f Dockerfile.prod -t myapp:prod .
+
+# 构建时传递参数
+docker build --build-arg VERSION=1.0.0 -t myapp .</code></pre>
+                            <hr>
+                            <h2>🐙 Docker Compose</h2>
+                            <p>Docker Compose用于定义和运行多容器Docker应用程序的工具。</p>
+                            <h3>📄 docker-compose.yaml基本结构</h3>
+                            <pre><code class="language-yaml">version: '3.8'  # 版本号
+
+services:       # 服务定义
+  服务名:
+    build: ./目录           # 构建配置
+    image: 镜像名:标签       # 使用镜像
+    ports:                  # 端口映射
+      - &quot;主机端口:容器端口&quot;
+    volumes:                # 卷挂载
+      - 主机路径:容器路径
+    environment:            # 环境变量
+      - 键=值
+    depends_on:            # 依赖关系
+      - 其他服务名
+    networks:              # 网络配置
+      - 网络名
+
+volumes:        # 数据卷定义
+  卷名:
+
+networks:       # 网络定义
+  网络名:
+    driver: bridge</code></pre>
+                            <h3>🎯 常用配置选项</h3>
+                            <h4>服务配置详解</h4>
+                            <pre><code class="language-yaml">services:
+  web:
+    # 构建配置
+    build:
+      context: ./web          # 构建上下文
+      dockerfile: Dockerfile  # Dockerfile路径
+      args:                   # 构建参数
+        VERSION: &quot;1.0&quot;
+    
+    # 镜像配置
+    image: nginx:alpine
+    container_name: my-web
+    
+    # 端口配置
+    ports:
+      - &quot;8080:80&quot;
+      - &quot;443:443&quot;
+    
+    # 环境变量
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=db
+      - REDIS_URL=redis://redis:6379
+    
+    # 环境变量文件
+    env_file:
+      - .env
+      - .env.production
+    
+    # 卷挂载
+    volumes:
+      - ./html:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - static_volume:/var/www/static
+    
+    # 依赖关系
+    depends_on:
+      - db
+      - redis
+    
+    # 网络配置
+    networks:
+      - frontend
+      - backend
+    
+    # 重启策略
+    restart: unless-stopped
+    
+    # 健康检查
+    healthcheck:
+      test: [&quot;CMD&quot;, &quot;curl&quot;, &quot;-f&quot;, &quot;http://localhost:80/health&quot;]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s</code></pre>
+                            <h3>🌐 实战示例</h3>
+                            <h4>Web应用完整配置</h4>
+                            <pre><code class="language-yaml">version: '3.8'
+
+services:
+  # Web服务
+  web:
+    build: .
+    container_name: myapp-web
+    ports:
+      - &quot;3000:3000&quot;
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=myapp
+      - DB_USER=postgres
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - db
+      - redis
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # 数据库服务
+  db:
+    image: postgres:13
+    container_name: myapp-db
+    environment:
+      - POSTGRES_DB=myapp
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=secretpassword
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - &quot;5432:5432&quot;
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # Redis服务
+  redis:
+    image: redis:6-alpine
+    container_name: myapp-redis
+    ports:
+      - &quot;6379:6379&quot;
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  # Nginx反向代理
+  nginx:
+    image: nginx:alpine
+    container_name: myapp-nginx
+    ports:
+      - &quot;80:80&quot;
+      - &quot;443:443&quot;
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - web
+    networks:
+      - app-network
+    restart: unless-stopped
+
+# 数据卷定义
+volumes:
+  postgres_data:
+  redis_data:
+
+# 网络定义
+networks:
+  app-network:
+    driver: bridge</code></pre>
+                            <h4>开发环境配置</h4>
+                            <pre><code class="language-yaml">version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/app
+      - /app/node_modules  # 防止node_modules被覆盖
+    ports:
+      - &quot;3000:3000&quot;
+      - &quot;9229:9229&quot;  # Node.js调试端口
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true  # 支持热重载
+    command: npm run dev
+    depends_on:
+      - db
+      - redis
+    networks:
+      - dev-network
+
+  db:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=devdb
+    ports:
+      - &quot;3306:3306&quot;
+    volumes:
+      - mysql_dev_data:/var/lib/mysql
+    networks:
+      - dev-network
+
+  redis:
+    image: redis:6-alpine
+    ports:
+      - &quot;6379:6379&quot;
+    networks:
+      - dev-network
+
+volumes:
+  mysql_dev_data:
+
+networks:
+  dev-network:
+    driver: bridge</code></pre>
+                            <h3>⚡ 常用命令</h3>
+                            <pre><code class="language-bash"># 启动所有服务（后台运行）
+docker-compose up -d
+
+# 启动指定服务
+docker-compose up -d web
+
+# 启动并查看日志
+docker-compose up
+
+# 停止所有服务
+docker-compose down
+
+# 停止并删除数据卷
+docker-compose down -v
+
+# 停止并删除镜像
+docker-compose down --rmi all
+
+# 重新构建并启动
+docker-compose up -d --build
+
+# 查看服务状态
+docker-compose ps
+
+# 查看日志
+docker-compose logs
+docker-compose logs -f web  # 实时查看web服务日志
+docker-compose logs --tail=100  # 查看最后100行
+
+# 进入容器
+docker-compose exec web bash
+docker-compose exec db mysql -u root -p
+
+# 执行命令
+docker-compose run web npm run test
+
+# 扩展服务
+docker-compose up -d --scale web=3
+
+# 查看资源使用
+docker-compose top</code></pre>
+                            <h3>🔧 高级配置</h3>
+                            <h4>环境变量文件</h4>
+                            <pre><code class="language-bash"># .env文件
+NODE_ENV=production
+DB_HOST=db
+DB_PORT=5432
+DB_NAME=myapp
+DB_USER=postgres
+DB_PASSWORD=secretpassword</code></pre>
+                            <h4>覆盖配置</h4>
+                            <pre><code class="language-yaml"># docker-compose.override.yml
+version: '3.8'
+
+services:
+  web:
+    volumes:
+      - ./src:/app/src  # 开发时挂载源码
+    environment:
+      - NODE_ENV=development
+    command: npm run dev</code></pre>
+                            <h4>生产环境配置</h4>
+                            <pre><code class="language-yaml"># docker-compose.prod.yml
+version: '3.8'
+
+services:
+  web:
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    logging:
+      driver: &quot;json-file&quot;
+      options:
+        max-size: &quot;10m&quot;
+        max-file: &quot;3&quot;</code></pre>
+                            <hr>
+                            <h2>🔒 Docker私有仓库</h2>
+                            <p>Docker私有仓库用于存储和管理自定义的Docker镜像。</p>
+                            <h3>🏗️ 搭建私有仓库</h3>
+                            <h4>使用官方Registry镜像</h4>
+                            <pre><code class="language-bash"># 拉取Registry镜像
+docker pull registry
+
+# 启动私有仓库
+docker run -di --name=registry \
+  -p 5000:5000 \
+  -v /opt/registry:/var/lib/registry \
+  registry
+
+# 启动带认证的私有仓库
+docker run -di --name=registry-auth \
+  -p 5000:5000 \
+  -v /opt/registry:/var/lib/registry \
+  -v /opt/auth:/auth \
+  -e REGISTRY_AUTH=htpasswd \
+  -e REGISTRY_AUTH_HTPASSWD_REALM=&quot;Registry Realm&quot; \
+  -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd \
+  registry</code></pre>
+                            <h4>配置认证</h4>
+                            <pre><code class="language-bash"># 安装htpasswd工具
+apt install apache2-utils
+
+# 创建认证文件
+htpasswd -Bbn testuser testpass &gt; /opt/auth/htpasswd</code></pre>
+                            <h3>🔧 配置Docker客户端</h3>
+                            <pre><code class="language-bash"># 修改Docker配置文件
+vi /etc/docker/daemon.json
+
+{
+  &quot;insecure-registries&quot;: [&quot;私有仓库IP:5000&quot;]
+}
+
+# 重启Docker
+systemctl restart docker</code></pre>
+                            <h3>📦 推送和拉取镜像</h3>
+                            <pre><code class="language-bash"># 标记镜像
+docker tag 本地镜像名:标签 私有仓库IP:5000/镜像名:标签
+
+# 推送镜像
+docker push 私有仓库IP:5000/镜像名:标签
+
+# 拉取镜像
+docker pull 私有仓库IP:5000/镜像名:标签
+
+# 查看仓库中的镜像
+curl http://私有仓库IP:5000/v2/_catalog</code></pre>
+                            <hr>
+                            <h2>🔧 Docker Maven插件</h2>
+                            <p>Docker Maven插件用于在Maven构建过程中自动构建和推送Docker镜像。</p>
+                            <h3>📝 插件配置</h3>
+                            <h4>pom.xml配置</h4>
+                            <pre><code class="language-xml">&lt;build&gt;
+    &lt;plugins&gt;
+        &lt;plugin&gt;
+            &lt;groupId&gt;com.spotify&lt;/groupId&gt;
+            &lt;artifactId&gt;dockerfile-maven-plugin&lt;/artifactId&gt;
+            &lt;version&gt;1.4.13&lt;/version&gt;
+            &lt;configuration&gt;
+                &lt;repository&gt;your-registry/${project.artifactId}&lt;/repository&gt;
+                &lt;tag&gt;${project.version}&lt;/tag&gt;
+                &lt;buildArgs&gt;
+                    &lt;JAR_FILE&gt;target/${project.build.finalName}.jar&lt;/JAR_FILE&gt;
+                &lt;/buildArgs&gt;
+            &lt;/configuration&gt;
+        &lt;/plugin&gt;
+    &lt;/plugins&gt;
+&lt;/build&gt;</code></pre>
+                            <h4>Dockerfile示例</h4>
+                            <pre><code class="language-dockerfile">FROM openjdk:11-jre-slim
+
+ARG JAR_FILE
+COPY ${JAR_FILE} app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT [&quot;java&quot;, &quot;-jar&quot;, &quot;/app.jar&quot;]</code></pre>
+                            <h3>⚡ Maven命令</h3>
+                            <pre><code class="language-bash"># 构建Docker镜像
+mvn dockerfile:build
+
+# 推送镜像到仓库
+mvn dockerfile:push
+
+# 构建并推送
+mvn dockerfile:build dockerfile:push
+
+# 指定标签
+mvn dockerfile:build -Ddockerfile.tag=latest
+
+# 强制重建
+mvn dockerfile:build -Ddockerfile.noCache</code></pre>
+                            <h3>🎯 高级配置</h3>
+                            <h4>多环境配置</h4>
+                            <pre><code class="language-xml">&lt;profiles&gt;
+    &lt;profile&gt;
+        &lt;id&gt;dev&lt;/id&gt;
+        &lt;properties&gt;
+            &lt;docker.registry&gt;localhost:5000&lt;/docker.registry&gt;
+        &lt;/properties&gt;
+    &lt;/profile&gt;
+    &lt;profile&gt;
+        &lt;id&gt;prod&lt;/id&gt;
+        &lt;properties&gt;
+            &lt;docker.registry&gt;registry.example.com&lt;/docker.registry&gt;
+        &lt;/properties&gt;
+    &lt;/profile&gt;
+&lt;/profiles&gt;
+
+&lt;build&gt;
+    &lt;plugins&gt;
+        &lt;plugin&gt;
+            &lt;groupId&gt;com.spotify&lt;/groupId&gt;
+            &lt;artifactId&gt;dockerfile-maven-plugin&lt;/artifactId&gt;
+            &lt;configuration&gt;
+                &lt;repository&gt;${docker.registry}/${project.artifactId}&lt;/repository&gt;
+                &lt;tag&gt;${project.version}&lt;/tag&gt;
+            &lt;/configuration&gt;
+        &lt;/plugin&gt;
+    &lt;/plugins&gt;
+&lt;/build&gt;</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网络设备配置管理学习经验 - 华为eNSP - 我的个人博客</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/markdown.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>我的个人博客</h1>
+            <nav>
+                <span><a href="../index.html" class="no-underline">首页</a></span>
+            </nav>
+        </header>
+
+        <main>
+            <div class="messages-list">
+                <div class="messages-header">
+                    <h3>🌐 网络设备配置管理学习经验 - 华为eNSP</h3>
+                    <a href="../index.html" class="btn">返回首页</a>
+                </div>
+
+                <div class="message-item">
+                    <div class="message-header">
+                        <span class="username">技术分享</span>
+                        <span class="time">2025-12-20</span>
+                    </div>
+                    <div class="message-content">
+                        <div class="markdown-content">
+                            <h2>📚 基础概念</h2>
+                            <p>网络设备配置的目的是为了能够设备之间能够正常通信，交换机分为两层和三层，G是千兆，E是百兆。路由器的端口很少，路由器有子接口。</p>
+                            <hr>
+                            <h2>⚠️ eNSP AR报错解决方案</h2>
+                            <h3>🔧 虚拟化配置</h3>
+                            <pre><code class="language-batch">@echo off
+
+dism /Online /Disable-Feature:microsoft-hyper-v-all /NoRestart
+dism /Online /Disable-Feature:IsolatedUserMode /NoRestart
+dism /Online /Disable-Feature:Microsoft-Hyper-V-Hypervisor /NoRestart
+dism /Online /Disable-Feature:Microsoft-Hyper-V-Online /NoRestart
+dism /Online /Disable-Feature:HypervisorPlatform /NoRestart
+
+REM ===========================================
+
+mountvol X: /s
+copy %WINDIR%\System32\SecConfig.efi X:\EFI\Microsoft\Boot\SecConfig.efi /Y
+bcdedit /create {0cb3b571-2f2e-4343-a879-d86a476d7215} /d &quot;DebugTool&quot; /application osloader
+bcdedit /set {0cb3b571-2f2e-4343-a879-d86a476d7215} path &quot;\EFI\Microsoft\Boot\SecConfig.efi&quot;
+bcdedit /set {bootmgr} bootsequence {0cb3b571-2f2e-4343-a879-d86a476d7215}
+bcdedit /set {0cb3b571-2f2e-4343-a879-d86a476d7215} loadoptions DISABLE-LSA-ISO,DISABLE-VBS
+bcdedit /set {0cb3b571-2f2e-4343-a879-d86a476d7215} device partition=X:
+mountvol X: /d
+bcdedit /set hypervisorlaunchtype off
+
+echo.
+echo.
+echo.
+echo.
+echo =======================================================
+echo   请关闭此窗口，然后重启计算机以应用更改
+pause &gt; nul
+echo.
+echo.</code></pre>
+                            <h3>🎮 完美竞技平台</h3>
+                            <pre><code class="language-batch">net stop MessageTransfer</code></pre>
+                            <h3>🔒 虚拟网卡</h3>
+                            <pre><code class="language-batch">\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\NetworkSetup2
+https://github.com/jschicht/RunAsTI (需要科学上网)</code></pre>
+                            <h3>🛡️ 杀毒软件问题</h3>
+                            <blockquote>
+                                <p>⚠️ 注意：杀毒软件可能导致VirtualBox无法正常打开</p>
+                            </blockquote>
+                            <hr>
+                            <h2>📖 相关理论</h2>
+                            <p><em>（待补充）</em></p>
+                            <hr>
+                            <h2>🛠️ 实训操作</h2>
+                            <h3>🔌 端口隔离</h3>
+                            <p><strong>目的</strong>: 使得同一VLAN下才能正常通信，不同VLAN不能通信</p>
+                            <pre><code class="language-bash">vlan batch                    # 创建VLAN
+port link-type access/trunk   # 只有一条VLAN用access，两条及以上用trunk
+port default vlan             # 端口划分给VLAN
+port trunk allow-pass vlan    # 允许VLAN通过</code></pre>
+                            <h3>🌐 三层交换机实现VLAN通信</h3>
+                            <p><strong>目的</strong>: 使得不同网段的设备通过三层交换机划分的VLAN进行通信</p>
+                            <pre><code class="language-bash">int vlanif        # 进入VLAN管理口
+ip addr          # 添加IP做网关(三层特有)</code></pre>
+                            <h3>🌳 生成树协议</h3>
+                            <p><strong>目的</strong>: 避免环路生成</p>
+                            <p><strong>备注</strong>: STP是自动生成的，有三种模式：</p>
+                            <ul>
+                                <li><strong>STP</strong> (传统模式)</li>
+                                <li><strong>RSTP</strong> (快速生成树)</li>
+                                <li><strong>MSTP</strong> (多实例生成树)</li>
+                            </ul>
+                            <p>要分清根桥、根端口、指定端口和替换端口</p>
+                            <pre><code class="language-bash">stp enable                    # 启动生成树
+stp mode                      # 设置生成树模式
+display stp brief            # 查看生成树情况
+stp root primary             # 指定根桥
+int g0/0/1|stp coat 1        # 通过修改端口的花销值，指定根端口</code></pre>
+                            <h3>🔗 链路聚合(端口聚合)</h3>
+                            <p><strong>优点</strong>:</p>
+                            <ul>
+                                <li>🚀 增加带宽</li>
+                                <li>🚫 避免堵塞</li>
+                                <li>⚖️ 负载均衡</li>
+                            </ul>
+                            <pre><code class="language-bash">int eth-trunk1                           # 创建Eth-Trunk端口
+mode manual load-balance                 # 设置手工模式
+trunkport g0/0/1                         # 将g0/0/1加入eth-trunk端口
+undo eth-trunk                          # 关闭端口聚合
+mode lacp-static                        # 设置为LACP模式
+lacp priority 100                       # 设置优先级
+max active-linknumber 2                 # 将最大活动端口数设为2
+lacp preempt enable                     # 开启端口抢占功能
+lacp preempt delay 10                   # 10秒内抢占一次端口</code></pre>
+                            <h3>🛣️ 单臂路由</h3>
+                            <p><strong>目的</strong>: 通过路由器的三层功能，实现不同VLAN、不同网段的设备之间通信</p>
+                            <pre><code class="language-bash">dot1q termination vid        # 指定VID
+arp broadcast enable        # 开启ARP广播</code></pre>
+                            <h3>🧭 静态路由</h3>
+                            <pre><code class="language-bash">display ip routing-table                    # 查看路由表
+ip route-static 网段 掩码 下一跳            # 添加静态路由</code></pre>
+                            <h3>🎈 浮动路由</h3>
+                            <pre><code class="language-bash">ip route-static 0.0.0.0 下一跳 preference 100
+tracert                                      # 查看经过的网关</code></pre>
+                            <h3>🕸️ OSPF协议</h3>
+                            <p><strong>目的</strong>: 发现维护邻居关系，计算最优路径</p>
+                            <pre><code class="language-bash">ospf 1                                        # 创建OSPF
+area 0                                        # 创建骨干区域
+network 网络号 反掩码                        # 配置网络
+display ospf interface                       # 查看OSPF状态
+dis ospf peer                               # 查看邻居状态
+dis ip routing-table protocol ospf          # 查看OSPF的路由表</code></pre>
+                            <h3>📡 DHCP服务</h3>
+                            <p><strong>目的</strong>: 为设备分配IP地址</p>
+                            <pre><code class="language-bash">dhcp enable                                  # 启动DHCP
+# 接口地址池分配
+int g0/0/1|ip addr 192.168.1.254 24|dhcp select interface
+# 创建全局地址池
+ip pool pool2|gateway-list 192.168.1.254|network 192.168.1.0 mask 24
+# 设置全局地址池分配
+int g0/0/0| ip addr 192.168.1.254 24|dhcp select global</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tkinter GUI 编程指南 - 我的个人博客</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/markdown.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>我的个人博客</h1>
+            <nav>
+                <span><a href="../index.html" class="no-underline">首页</a></span>
+            </nav>
+        </header>
+
+        <main>
+            <div class="messages-list">
+                <div class="messages-header">
+                    <h3>Tkinter GUI 编程指南</h3>
+                    <a href="../index.html" class="btn">返回首页</a>
+                </div>
+
+                <div class="message-item">
+                    <div class="message-header">
+                        <span class="username">技术分享</span>
+                        <span class="time">2025-12-20</span>
+                    </div>
+                    <div class="message-content">
+                        <div class="markdown-content">
+                            <h2>基础入门</h2>
+                            <h3>导入库</h3>
+                            <pre><code class="language-python">import tkinter as tk
+# 或者
+from tkinter import *</code></pre>
+                            <h3>创建基本窗口</h3>
+                            <pre><code class="language-python">import tkinter as tk
+
+# 创建主窗口
+root = tk.Tk()
+root.title(&quot;我的第一个GUI程序&quot;)
+root.geometry(&quot;400x300&quot;)  # 宽度x高度
+
+# 开启主循环
+root.mainloop()</code></pre>
+                            <hr>
+                            <h2>窗口属性设置</h2>
+                            <h3>基本属性</h3>
+                            <pre><code class="language-python">import tkinter as tk
+
+root = tk.Tk()
+
+# 窗口标题
+root.title(&quot;窗口标题&quot;)
+
+# 窗口大小和位置
+root.geometry(&quot;800x600+100+100&quot;)  # 宽x高+左边距+上边距
+
+# 最小/最大尺寸
+root.minsize(300, 200)
+root.maxsize(1200, 800)
+
+# 窗口是否可缩放
+root.resizable(True, True)  # (宽可缩放, 高可缩放)
+root.resizable(False, False)  # 固定大小
+
+# 窗口图标
+root.iconbitmap(&quot;icon.ico&quot;)  # Windows
+# root.iconphoto(True, tk.PhotoImage(file=&quot;icon.png&quot;))  # 跨平台
+
+# 背景颜色
+root.configure(bg=&quot;lightblue&quot;)
+
+# 窗口透明度 (0.0-1.0)
+root.attributes(&quot;-alpha&quot;, 0.9)
+
+# 窗口置顶
+root.attributes(&quot;-topmost&quot;, True)
+
+# 窗口关闭前执行
+def on_closing():
+    if messagebox.askokcancel(&quot;退出&quot;, &quot;确定要退出吗？&quot;):
+        root.destroy()
+
+root.protocol(&quot;WM_DELETE_WINDOW&quot;, on_closing)
+
+root.mainloop()</code></pre>
+                            <hr>
+                            <h2>常用组件</h2>
+                            <h3>Label 标签组件</h3>
+                            <pre><code class="language-python"># 基本标签
+label1 = tk.Label(root, text=&quot;Hello, Tkinter!&quot;)
+label1.pack()
+
+# 带样式的标签
+label2 = tk.Label(
+    root,
+    text=&quot;样式化标签&quot;,
+    font=(&quot;Arial&quot;, 16, &quot;bold&quot;),
+    fg=&quot;white&quot;,           # 前景色（文字颜色）
+    bg=&quot;blue&quot;,            # 背景色
+    padx=10,              # 水平内边距
+    pady=5,               # 垂直内边距
+    relief=tk.RAISED,     # 边框样式
+    bd=2                  # 边框宽度
+)
+label2.pack(pady=10)
+
+# 图片标签
+photo = tk.PhotoImage(file=&quot;image.png&quot;)
+image_label = tk.Label(root, image=photo)
+image_label.pack()</code></pre>
+                            <h3>Entry 输入框组件</h3>
+                            <pre><code class="language-python"># 基本输入框
+entry1 = tk.Entry(root)
+entry1.pack(pady=5)
+
+# 带样式的输入框
+entry2 = tk.Entry(
+    root,
+    font=(&quot;Arial&quot;, 12),
+    width=30,
+    bg=&quot;lightyellow&quot;,
+    fg=&quot;black&quot;,
+    show=&quot;*&quot;,              # 显示字符（密码框用*）
+    state=&quot;normal&quot;         # normal, readonly, disabled
+)
+entry2.pack(pady=5)
+
+# 字符串变量绑定
+var_text = tk.StringVar(value=&quot;默认文本&quot;)
+entry3 = tk.Entry(root, textvariable=var_text)
+entry3.pack()
+
+# 获取输入内容
+def get_input():
+    content = entry1.get()
+    print(f&quot;输入内容: {content}&quot;)
+
+# 设置输入内容
+def set_input():
+    entry1.delete(0, tk.END)  # 清空
+    entry1.insert(0, &quot;新内容&quot;)  # 插入</code></pre>
+                            <h3>Button 按钮组件</h3>
+                            <pre><code class="language-python"># 基本按钮
+button1 = tk.Button(root, text=&quot;点击我&quot;)
+button1.pack(pady=5)
+
+# 带命令的按钮
+def on_click():
+    print(&quot;按钮被点击了！&quot;)
+
+button2 = tk.Button(
+    root,
+    text=&quot;提交&quot;,
+    command=on_click,
+    font=(&quot;Arial&quot;, 12),
+    bg=&quot;green&quot;,
+    fg=&quot;white&quot;,
+    width=10,
+    height=2,
+    relief=tk.RAISED,
+    bd=3
+)
+button2.pack(pady=5)
+
+# 带参数的按钮命令
+def show_message(message):
+    messagebox.showinfo(&quot;提示&quot;, message)
+
+button3 = tk.Button(
+    root,
+    text=&quot;显示消息&quot;,
+    command=lambda: show_message(&quot;Hello World!&quot;)
+)
+button3.pack(pady=5)</code></pre>
+                            <h3>Text 文本框组件</h3>
+                            <pre><code class="language-python"># 创建文本框
+text_widget = tk.Text(root, height=10, width=50)
+text_widget.pack(pady=10)
+
+# 插入文本
+text_widget.insert(tk.END, &quot;这是文本框内容\n&quot;)
+text_widget.insert(tk.INSERT, &quot;在光标位置插入&quot;)
+
+# 获取所有文本
+all_text = text_widget.get(1.0, tk.END)
+
+# 获取选中文本
+selected_text = text_widget.get(tk.SEL_FIRST, tk.SEL_LAST)
+
+# 清空文本框
+text_widget.delete(1.0, tk.END)
+
+# 添加滚动条
+scrollbar = tk.Scrollbar(root)
+scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+text_widget.config(yscrollcommand=scrollbar.set)
+scrollbar.config(command=text_widget.yview)</code></pre>
+                            <hr>
+                            <h2>布局管理</h2>
+                            <h3>pack 布局</h3>
+                            <pre><code class="language-python"># 基本用法
+widget.pack()
+
+# 带参数的pack
+widget.pack(
+    side=tk.TOP,         # TOP, BOTTOM, LEFT, RIGHT
+    fill=tk.BOTH,        # NONE, X, Y, BOTH
+    expand=True,         # 是否扩展
+    padx=10,             # 水平外边距
+    pady=5,              # 垂直外边距
+    ipadx=5,             # 水平内边距
+    ipady=2              # 垂直内边距
+)
+
+# 示例
+label1 = tk.Label(root, text=&quot;顶部&quot;, bg=&quot;red&quot;)
+label1.pack(side=tk.TOP, fill=tk.X)
+
+label2 = tk.Label(root, text=&quot;左侧&quot;, bg=&quot;green&quot;)
+label2.pack(side=tk.LEFT, fill=tk.Y)
+
+label3 = tk.Label(root, text=&quot;中间&quot;, bg=&quot;blue&quot;)
+label3.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)</code></pre>
+                            <h3>grid 布局</h3>
+                            <pre><code class="language-python"># 基本网格布局
+label1 = tk.Label(root, text=&quot;用户名:&quot;)
+label1.grid(row=0, column=0, padx=5, pady=5)
+
+entry1 = tk.Entry(root)
+entry1.grid(row=0, column=1, padx=5, pady=5)
+
+label2 = tk.Label(root, text=&quot;密码:&quot;)
+label2.grid(row=1, column=0, padx=5, pady=5)
+
+entry2 = tk.Entry(root, show=&quot;*&quot;)
+entry2.grid(row=1, column=1, padx=5, pady=5)
+
+# 跨行跨列
+button = tk.Button(root, text=&quot;登录&quot;)
+button.grid(row=2, column=0, columnspan=2, pady=10)
+
+# 粘性选项
+widget.grid(
+    row=0,
+    column=0,
+    sticky=&quot;nsew&quot;,      # 北南东西（上下左右）
+    padx=5,
+    pady=5,
+    ipadx=2,
+    ipady=2
+)
+
+# 配置行列权重
+root.grid_rowconfigure(0, weight=1)
+root.grid_columnconfigure(1, weight=1)</code></pre>
+                            <h3>place 布局</h3>
+                            <pre><code class="language-python"># 绝对定位
+label = tk.Label(root, text=&quot;绝对定位&quot;)
+label.place(x=50, y=50)
+
+# 相对定位
+button = tk.Button(root, text=&quot;相对定位&quot;)
+button.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
+# 尺寸控制
+widget.place(
+    x=100, y=100,
+    width=200, height=50,
+    relx=0.1, rely=0.1,
+    relwidth=0.8, relheight=0.2
+)</code></pre>
+                            <hr>
+                            <h2>高级组件</h2>
+                            <h3>Listbox 列表框</h3>
+                            <pre><code class="language-python"># 创建列表框
+listbox = tk.Listbox(root, height=6)
+listbox.pack(pady=10)
+
+# 添加项目
+items = [&quot;苹果&quot;, &quot;香蕉&quot;, &quot;橙子&quot;, &quot;葡萄&quot;, &quot;西瓜&quot;]
+for item in items:
+    listbox.insert(tk.END, item)
+
+# 获取选中项
+def get_selection():
+    selection = listbox.curselection()
+    if selection:
+        index = selection[0]
+        item = listbox.get(index)
+        print(f&quot;选中: {item}&quot;)
+
+# 删除选中项
+def delete_selection():
+    selection = listbox.curselection()
+    if selection:
+        listbox.delete(selection[0])
+
+# 绑定事件
+listbox.bind('&lt;&lt;ListboxSelect&gt;&gt;', lambda e: get_selection())</code></pre>
+                            <h3>Combobox 下拉框</h3>
+                            <pre><code class="language-python">from tkinter import ttk
+
+# 创建下拉框
+combo = ttk.Combobox(root, values=[&quot;选项1&quot;, &quot;选项2&quot;, &quot;选项3&quot;])
+combo.pack(pady=10)
+
+# 设置默认值
+combo.set(&quot;选项1&quot;)
+
+# 获取选中值
+def get_combo_value():
+    selected = combo.get()
+    print(f&quot;选中: {selected}&quot;)
+
+# 只读模式
+combo['state'] = 'readonly'  # normal, readonly, disabled</code></pre>
+                            <h3>Scale 滑块组件</h3>
+                            <pre><code class="language-python"># 创建滑块
+scale = tk.Scale(
+    root,
+    from_=0,
+    to=100,
+    orient=tk.HORIZONTAL,    # HORIZONTAL, VERTICAL
+    length=200,
+    label=&quot;音量&quot;,
+    command=lambda value: print(f&quot;音量: {value}&quot;)
+)
+scale.pack(pady=10)
+
+# 获取滑块值
+def get_scale_value():
+    value = scale.get()
+    print(f&quot;当前值: {value}&quot;)</code></pre>
+                            <h3>Checkbutton 复选框</h3>
+                            <pre><code class="language-python"># 变量绑定
+var1 = tk.IntVar()
+var2 = tk.IntVar()
+
+check1 = tk.Checkbutton(
+    root,
+    text=&quot;选项1&quot;,
+    variable=var1,
+    command=lambda: print(f&quot;选项1: {var1.get()}&quot;)
+)
+check1.pack()
+
+check2 = tk.Checkbutton(
+    root,
+    text=&quot;选项2&quot;,
+    variable=var2
+)
+check2.pack()
+
+# 检查状态
+def check_states():
+    print(f&quot;选项1: {bool(var1.get())}&quot;)
+    print(f&quot;选项2: {bool(var2.get())}&quot;)</code></pre>
+                            <h3>Radiobutton 单选框</h3>
+                            <pre><code class="language-python"># 变量绑定
+var_radio = tk.StringVar(value=&quot;选项1&quot;)
+
+radio1 = tk.Radiobutton(
+    root,
+    text=&quot;选项1&quot;,
+    variable=var_radio,
+    value=&quot;选项1&quot;,
+    command=lambda: print(f&quot;选中: {var_radio.get()}&quot;)
+)
+radio1.pack()
+
+radio2 = tk.Radiobutton(
+    root,
+    text=&quot;选项2&quot;,
+    variable=var_radio,
+    value=&quot;选项2&quot;
+)
+radio2.pack()
+
+radio3 = tk.Radiobutton(
+    root,
+    text=&quot;选项3&quot;,
+    variable=var_radio,
+    value=&quot;选项3&quot;
+)
+radio3.pack()</code></pre>
+                            <hr>
+                            <h2>菜单栏</h2>
+                            <h3>创建菜单</h3>
+                            <pre><code class="language-python"># 创建菜单栏
+menubar = tk.Menu(root)
+root.config(menu=menubar)
+
+# 文件菜单
+file_menu = tk.Menu(menubar, tearoff=0)
+menubar.add_cascade(label=&quot;文件&quot;, menu=file_menu)
+file_menu.add_command(label=&quot;新建&quot;, command=lambda: print(&quot;新建文件&quot;))
+file_menu.add_command(label=&quot;打开&quot;, command=lambda: print(&quot;打开文件&quot;))
+file_menu.add_separator()
+file_menu.add_command(label=&quot;退出&quot;, command=root.quit)
+
+# 编辑菜单
+edit_menu = tk.Menu(menubar, tearoff=0)
+menubar.add_cascade(label=&quot;编辑&quot;, menu=edit_menu)
+edit_menu.add_command(label=&quot;复制&quot;, command=lambda: print(&quot;复制&quot;))
+edit_menu.add_command(label=&quot;粘贴&quot;, command=lambda: print(&quot;粘贴&quot;))
+
+# 帮助菜单
+help_menu = tk.Menu(menubar, tearoff=0)
+menubar.add_cascade(label=&quot;帮助&quot;, menu=help_menu)
+help_menu.add_command(label=&quot;关于&quot;, command=lambda: messagebox.showinfo(&quot;关于&quot;, &quot;Tkinter程序&quot;))</code></pre>
+                            <h3>右键菜单</h3>
+                            <pre><code class="language-python">def show_context_menu(event):
+    context_menu.post(event.x_root, event.y_root)
+
+# 创建右键菜单
+context_menu = tk.Menu(root, tearoff=0)
+context_menu.add_command(label=&quot;剪切&quot;, command=lambda: print(&quot;剪切&quot;))
+context_menu.add_command(label=&quot;复制&quot;, command=lambda: print(&quot;复制&quot;))
+context_menu.add_command(label=&quot;粘贴&quot;, command=lambda: print(&quot;粘贴&quot;))
+
+# 绑定右键事件
+root.bind(&quot;&lt;Button-3&gt;&quot;, show_context_menu)</code></pre>
+                            <hr>
+                            <h2>对话框</h2>
+                            <h3>消息框</h3>
+                            <pre><code class="language-python">from tkinter import messagebox
+
+# 信息框
+messagebox.showinfo(&quot;提示&quot;, &quot;这是一个信息提示&quot;)
+
+# 警告框
+messagebox.showwarning(&quot;警告&quot;, &quot;这是一个警告信息&quot;)
+
+# 错误框
+messagebox.showerror(&quot;错误&quot;, &quot;发生了一个错误&quot;)
+
+# 询问框
+result = messagebox.askokcancel(&quot;确认&quot;, &quot;确定要删除吗？&quot;)
+if result:
+    print(&quot;用户点击了确定&quot;)
+
+# 是/否框
+result = messagebox.askyesno(&quot;选择&quot;, &quot;是否继续？&quot;)
+if result:
+    print(&quot;用户选择了是&quot;)
+
+# 重试/取消框
+result = messagebox.askretrycancel(&quot;重试&quot;, &quot;操作失败，是否重试？&quot;)</code></pre>
+                            <h3>文件对话框</h3>
+                            <pre><code class="language-python">from tkinter import filedialog
+
+# 打开文件对话框
+file_path = filedialog.askopenfilename(
+    title=&quot;选择文件&quot;,
+    filetypes=[(&quot;文本文件&quot;, &quot;*.txt&quot;), (&quot;所有文件&quot;, &quot;*.*&quot;)]
+)
+
+# 保存文件对话框
+save_path = filedialog.asksaveasfilename(
+    title=&quot;保存文件&quot;,
+    defaultextension=&quot;.txt&quot;,
+    filetypes=[(&quot;文本文件&quot;, &quot;*.txt&quot;)]
+)
+
+# 选择目录
+directory = filedialog.askdirectory(title=&quot;选择目录&quot;)</code></pre>
+                            <h3>颜色选择器</h3>
+                            <pre><code class="language-python">from tkinter import colorchooser
+
+# 选择颜色
+color = colorchooser.askcolor(title=&quot;选择颜色&quot;)
+if color[1]:  # color[1] 是十六进制颜色值
+    selected_color = color[1]
+    print(f&quot;选择的颜色: {selected_color}&quot;)</code></pre>
+                            <hr>
+                            <h2>事件处理</h2>
+                            <h3>绑定事件</h3>
+                            <pre><code class="language-python"># 按键事件
+def on_key_press(event):
+    print(f&quot;按键: {event.keysym}&quot;)
+
+root.bind(&quot;&lt;KeyPress&gt;&quot;, on_key_press)
+root.bind(&quot;&lt;Return&gt;&quot;, lambda e: print(&quot;回车键&quot;))
+root.bind(&quot;&lt;Escape&gt;&quot;, lambda e: root.quit())
+
+# 鼠标事件
+def on_mouse_click(event):
+    print(f&quot;鼠标点击位置: ({event.x}, {event.y})&quot;)
+
+def on_mouse_motion(event):
+    print(f&quot;鼠标移动: ({event.x}, {event.y})&quot;)
+
+button.bind(&quot;&lt;Button-1&gt;&quot;, on_mouse_click)  # 左键点击
+button.bind(&quot;&lt;B1-Motion&gt;&quot;, on_mouse_motion)  # 左键拖动
+button.bind(&quot;&lt;Enter&gt;&quot;, lambda e: print(&quot;鼠标进入&quot;))
+button.bind(&quot;&lt;Leave&gt;&quot;, lambda e: print(&quot;鼠标离开&quot;))
+
+# 窗口事件
+def on_window_resize(event):
+    print(f&quot;窗口大小: {event.width}x{event.height}&quot;)
+
+root.bind(&quot;&lt;Configure&gt;&quot;, on_window_resize)</code></pre>
+                            <h3>事件参数</h3>
+                            <pre><code class="language-python">def event_info(event):
+    print(f&quot;事件类型: {event.type}&quot;)
+    print(f&quot;组件: {event.widget}&quot;)
+    print(f&quot;时间: {event.time}&quot;)
+    print(f&quot;坐标: ({event.x}, {event.y})&quot;)
+    print(f&quot;按键: {event.keysym}&quot;)
+    print(f&quot;状态: {event.state}&quot;)
+
+# 绑定多个事件
+widget.bind(&quot;&lt;Button-1&gt;&quot;, event_info)
+widget.bind(&quot;&lt;KeyPress&gt;&quot;, event_info)</code></pre>
+                            <hr>
+                            <h2>多窗口管理</h2>
+                            <h3>Toplevel 顶层窗口</h3>
+                            <pre><code class="language-python">def open_new_window():
+    # 创建新窗口
+    new_window = tk.Toplevel(root)
+    new_window.title(&quot;新窗口&quot;)
+    new_window.geometry(&quot;300x200&quot;)
+    
+    # 在新窗口中添加组件
+    label = tk.Label(new_window, text=&quot;这是一个新窗口&quot;)
+    label.pack(pady=20)
+    
+    close_button = tk.Button(
+        new_window,
+        text=&quot;关闭窗口&quot;,
+        command=new_window.destroy
+    )
+    close_button.pack(pady=10)
+
+# 主窗口中的按钮
+open_btn = tk.Button(root, text=&quot;打开新窗口&quot;, command=open_new_window)
+open_btn.pack(pady=20)</code></pre>
+                            <h3>窗口间通信</h3>
+                            <pre><code class="language-python">class MainWindow:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title(&quot;主窗口&quot;)
+        
+        self.data = &quot;共享数据&quot;
+        
+        tk.Button(self.root, text=&quot;打开子窗口&quot;, command=self.open_child).pack()
+    
+    def open_child(self):
+        ChildWindow(self)
+    
+    def update_data(self, new_data):
+        self.data = new_data
+        print(f&quot;数据已更新: {self.data}&quot;)
+
+class ChildWindow:
+    def __init__(self, parent):
+        self.parent = parent
+        
+        self.window = tk.Toplevel(parent.root)
+        self.window.title(&quot;子窗口&quot;)
+        
+        tk.Label(self.window, text=f&quot;当前数据: {parent.data}&quot;).pack()
+        
+        entry = tk.Entry(self.window)
+        entry.pack()
+        
+        tk.Button(
+            self.window,
+            text=&quot;更新数据&quot;,
+            command=lambda: self.update_data(entry.get())
+        ).pack()
+    
+    def update_data(self, new_data):
+        self.parent.update_data(new_data)
+        self.window.destroy()
+
+app = MainWindow()
+app.root.mainloop()</code></pre>
+                            <hr>
+                            <h2>样式美化</h2>
+                            <h3>ttk 主题</h3>
+                            <pre><code class="language-python">import tkinter.ttk as ttk
+
+# 获取可用主题
+print(ttk.Style().theme_names())
+
+# 设置主题
+style = ttk.Style()
+style.theme_use(&quot;clam&quot;)  # clam, alt, default, classic
+
+# 自定义样式
+style.configure(&quot;Custom.TButton&quot;,
+    font=(&quot;Arial&quot;, 12),
+    foreground=&quot;white&quot;,
+    background=&quot;blue&quot;
+)
+
+# 使用自定义样式
+button = ttk.Button(root, text=&quot;自定义按钮&quot;, style=&quot;Custom.TButton&quot;)
+button.pack(pady=10)</code></pre>
+                            <h3>颜色和字体</h3>
+                            <pre><code class="language-python"># 颜色定义
+colors = {
+    'bg': '#f0f0f0',      # 背景色
+    'fg': '#333333',      # 前景色
+    'button_bg': '#4CAF50', # 按钮背景
+    'button_fg': 'white',   # 按钮前景
+    'accent': '#2196F3'     # 强调色
+}
+
+# 字体定义
+fonts = {
+    'title': ('Arial', 16, 'bold'),
+    'normal': ('Arial', 10),
+    'button': ('Arial', 10, 'bold')
+}
+
+# 应用样式
+title_label = tk.Label(
+    root,
+    text=&quot;标题&quot;,
+    font=fonts['title'],
+    fg=colors['fg'],
+    bg=colors['bg']
+)</code></pre>
+                            <h3>边框和效果</h3>
+                            <pre><code class="language-python"># 边框样式
+relief_options = [tk.FLAT, tk.RAISED, tk.SUNKEN, tk.GROOVE, tk.RIDGE]
+
+for i, relief in enumerate(relief_options):
+    label = tk.Label(
+        root,
+        text=relief,
+        relief=relief,
+        bd=3,  # 边框宽度
+        padx=10,
+        pady=5
+    )
+    label.grid(row=i, column=0, pady=5)
+
+# 创建3D效果
+frame = tk.Frame(root, relief=tk.RAISED, bd=2)
+frame.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
+
+content = tk.Label(frame, text=&quot;3D边框效果&quot;, bg=&quot;white&quot;)
+content.pack(padx=5, pady=5)</code></pre>
+                            <hr>
+                            <h2>实用示例</h2>
+                            <h3>计算器程序</h3>
+                            <pre><code class="language-python">class Calculator:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title(&quot;计算器&quot;)
+        self.root.geometry(&quot;300x400&quot;)
+        self.root.resizable(False, False)
+        
+        self.current = &quot;&quot;
+        self.result_var = tk.StringVar(value=&quot;0&quot;)
+        
+        self.create_widgets()
+    
+    def create_widgets(self):
+        # 显示屏
+        display = tk.Entry(
+            self.root,
+            textvariable=self.result_var,
+            font=('Arial', 20),
+            justify='right',
+            bd=10,
+            readonlybackground='white',
+            state='readonly'
+        )
+        display.pack(fill=tk.BOTH, padx=10, pady=10)
+        
+        # 按钮布局
+        buttons = [
+            ['C', '±', '%', '÷'],
+            ['7', '8', '9', '×'],
+            ['4', '5', '6', '-'],
+            ['1', '2', '3', '+'],
+            ['0', '.', '=']
+        ]
+        
+        for row_idx, row in enumerate(buttons):
+            for col_idx, text in enumerate(row):
+                if text == '0':
+                    btn = tk.Button(
+                        self.root, text=text,
+                        font=('Arial', 14), height=2,
+                        command=lambda t=text: self.on_click(t)
+                    )
+                    btn.grid(row=row_idx+1, column=col_idx, 
+                            columnspan=2, sticky='nsew', padx=2, pady=2)
+                elif text == '=':
+                    btn = tk.Button(
+                        self.root, text=text,
+                        font=('Arial', 14), height=2,
+                        bg='orange', fg='white',
+                        command=lambda t=text: self.on_click(t)
+                    )
+                    btn.grid(row=row_idx+1, column=col_idx, 
+                            columnspan=2, sticky='nsew', padx=2, pady=2)
+                else:
+                    color = 'lightgray' if text in 'C±%÷×+-' else 'white'
+                    btn = tk.Button(
+                        self.root, text=text,
+                        font=('Arial', 14), height=2,
+                        bg=color,
+                        command=lambda t=text: self.on_click(t)
+                    )
+                    btn.grid(row=row_idx+1, column=col_idx, 
+                            sticky='nsew', padx=2, pady=2)
+        
+        # 配置网格权重
+        for i in range(5):
+            self.root.grid_rowconfigure(i+1, weight=1)
+        for i in range(4):
+            self.root.grid_columnconfigure(i, weight=1)
+    
+    def on_click(self, text):
+        if text == 'C':
+            self.current = &quot;&quot;
+            self.result_var.set(&quot;0&quot;)
+        elif text == '=':
+            try:
+                # 替换运算符
+                expression = self.current.replace('×', '*').replace('÷', '/')
+                result = eval(expression)
+                self.result_var.set(str(result))
+                self.current = str(result)
+            except:
+                self.result_var.set(&quot;错误&quot;)
+                self.current = &quot;&quot;
+        elif text == '±':
+            if self.current and self.current != '0':
+                if self.current[0] == '-':
+                    self.current = self.current[1:]
+                else:
+                    self.current = '-' + self.current
+                self.result_var.set(self.current)
+        else:
+            if self.result_var.get() == &quot;0&quot; or self.result_var.get() == &quot;错误&quot;:
+                self.current = text
+            else:
+                self.current += text
+            self.result_var.set(self.current)
+    
+    def run(self):
+        self.root.mainloop()
+
+# 运行计算器
+if __name__ == &quot;__main__&quot;:
+    calc = Calculator()
+    calc.run()</code></pre>
+                            <h3>待办事项应用</h3>
+                            <pre><code class="language-python">class TodoApp:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title(&quot;待办事项&quot;)
+        self.root.geometry(&quot;400x500&quot;)
+        
+        self.todos = []
+        self.create_widgets()
+    
+    def create_widgets(self):
+        # 标题
+        title = tk.Label(
+            self.root,
+            text=&quot;我的待办事项&quot;,
+            font=('Arial', 16, 'bold'),
+            bg='#4CAF50',
+            fg='white',
+            pady=10
+        )
+        title.pack(fill=tk.X)
+        
+        # 输入框架
+        input_frame = tk.Frame(self.root)
+        input_frame.pack(fill=tk.X, padx=10, pady=10)
+        
+        self.entry = tk.Entry(
+            input_frame,
+            font=('Arial', 12),
+            bd=2,
+            relief=tk.GROOVE
+        )
+        self.entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
+        
+        add_btn = tk.Button(
+            input_frame,
+            text=&quot;添加&quot;,
+            command=self.add_todo,
+            bg='#4CAF50',
+            fg='white',
+            font=('Arial', 10, 'bold'),
+            padx=20
+        )
+        add_btn.pack(side=tk.RIGHT)
+        
+        # 绑定回车键
+        self.entry.bind('&lt;Return&gt;', lambda e: self.add_todo())
+        
+        # 列表框架
+        list_frame = tk.Frame(self.root)
+        list_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 10))
+        
+        # 滚动条
+        scrollbar = tk.Scrollbar(list_frame)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        
+        # 列表框
+        self.listbox = tk.Listbox(
+            list_frame,
+            font=('Arial', 11),
+            bd=0,
+            highlightthickness=0,
+            selectbackground='#a6a6a6',
+            activestyle=&quot;none&quot;,
+            yscrollcommand=scrollbar.set
+        )
+        self.listbox.pack(fill=tk.BOTH, expand=True)
+        scrollbar.config(command=self.listbox.yview)
+        
+        # 按钮框架
+        button_frame = tk.Frame(self.root)
+        button_frame.pack(fill=tk.X, padx=10, pady=(0, 10))
+        
+        complete_btn = tk.Button(
+            button_frame,
+            text=&quot;完成&quot;,
+            command=self.complete_todo,
+            bg='#2196F3',
+            fg='white',
+            font=('Arial', 10, 'bold')
+        )
+        complete_btn.pack(side=tk.LEFT, padx=(0, 5))
+        
+        delete_btn = tk.Button(
+            button_frame,
+            text=&quot;删除&quot;,
+            command=self.delete_todo,
+            bg='#f44336',
+            fg='white',
+            font=('Arial', 10, 'bold')
+        )
+        delete_btn.pack(side=tk.LEFT, padx=5)
+        
+        clear_btn = tk.Button(
+            button_frame,
+            text=&quot;清空&quot;,
+            command=self.clear_all,
+            bg='#FF9800',
+            fg='white',
+            font=('Arial', 10, 'bold')
+        )
+        clear_btn.pack(side=tk.RIGHT)
+    
+    def add_todo(self):
+        todo = self.entry.get().strip()
+        if todo:
+            self.listbox.insert(tk.END, f&quot;□ {todo}&quot;)
+            self.todos.append(todo)
+            self.entry.delete(0, tk.END)
+    
+    def complete_todo(self):
+        selection = self.listbox.curselection()
+        if selection:
+            index = selection[0]
+            current_text = self.listbox.get(index)
+            if current_text.startswith(&quot;□&quot;):
+                new_text = current_text.replace(&quot;□&quot;, &quot;☑&quot;, 1)
+            else:
+                new_text = current_text.replace(&quot;☑&quot;, &quot;□&quot;, 1)
+            self.listbox.delete(index)
+            self.listbox.insert(index, new_text)
+    
+    def delete_todo(self):
+        selection = self.listbox.curselection()
+        if selection:
+            index = selection[0]
+            self.listbox.delete(index)
+            del self.todos[index]
+    
+    def clear_all(self):
+        self.listbox.delete(0, tk.END)
+        self.todos.clear()
+    
+    def run(self):
+        self.root.mainloop()
+
+# 运行待办事项应用
+if __name__ == &quot;__main__&quot;:
+    app = TodoApp()
+    app.run()</code></pre>
+                            <hr>
+                            <h2>最佳实践</h2>
+                            <h3>代码组织</h3>
+                            <pre><code class="language-python"># 使用类组织代码
+class Application:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.setup_ui()
+    
+    def setup_ui(self):
+        # 设置UI组件
+        pass
+    
+    def run(self):
+        self.root.mainloop()
+
+# 分离UI和逻辑
+class UI:
+    def __init__(self, root):
+        self.root = root
+        self.create_widgets()
+    
+    def create_widgets(self):
+        pass
+
+class Logic:
+    def __init__(self, ui):
+        self.ui = ui
+    
+    def process_data(self):
+        pass</code></pre>
+                            <h3>错误处理</h3>
+                            <pre><code class="language-python">def safe_operation():
+    try:
+        # 可能出错的操作
+        result = risky_function()
+        return result
+    except ValueError as e:
+        messagebox.showerror(&quot;错误&quot;, f&quot;数值错误: {e}&quot;)
+    except FileNotFoundError as e:
+        messagebox.showerror(&quot;错误&quot;, f&quot;文件未找到: {e}&quot;)
+    except Exception as e:
+        messagebox.showerror(&quot;错误&quot;, f&quot;未知错误: {e}&quot;)
+    finally:
+        # 清理操作
+        pass</code></pre>
+                            <h3>性能优化</h3>
+                            <pre><code class="language-python"># 使用after代替循环
+def update_clock():
+    current_time = time.strftime(&quot;%H:%M:%S&quot;)
+    clock_label.config(text=current_time)
+    root.after(1000, update_clock)  # 1秒后再次调用
+
+# 批量更新UI
+def update_multiple_widgets():
+    widgets = [widget1, widget2, widget3]
+    for widget in widgets:
+        widget.config(state='disabled')
+    
+    # 执行耗时操作
+    
+    for widget in widgets:
+        widget.config(state='normal')</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

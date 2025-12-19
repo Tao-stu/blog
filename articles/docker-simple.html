@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docker 学习笔记简化版 - 我的个人博客</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/markdown.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>我的个人博客</h1>
+            <nav>
+                <span><a href="../index.html" class="no-underline">首页</a></span>
+            </nav>
+        </header>
+
+        <main>
+            <div class="messages-list">
+                <div class="messages-header">
+                    <h3>🐳 Docker 学习笔记</h3>
+                    <a href="../index.html" class="btn">返回首页</a>
+                </div>
+
+                <div class="message-item">
+                    <div class="message-header">
+                        <span class="username">技术分享</span>
+                        <span class="time">2025-12-20</span>
+                    </div>
+                    <div class="message-content">
+                        <div class="markdown-content">
+                            <h2>🚀 安装配置</h2>
+                            <pre><code class="language-bash"># 安装
+apt install docker.io
+
+# 换源
+tee /etc/docker/daemon.json &lt;&lt;-'EOF'
+{
+    &quot;registry-mirrors&quot;: [
+     &quot;https://docker.m.daocloud.io&quot;,
+     &quot;https://docker.imgdb.de&quot;,
+     &quot;https://docker-0.unsee.tech&quot;,
+     &quot;https://docker.hlmirror.com&quot;,
+     &quot;https://docker.1ms.run&quot;,
+     &quot;https://func.ink&quot;,
+     &quot;https://lispy.org&quot;,
+     &quot;https://docker.xiaogenban1993.com&quot;
+    ]
+}
+EOF
+
+# 重启服务
+systemctl daemon-reload
+systemctl restart docker</code></pre>
+                            <hr>
+                            <h2>⚡ 核心命令</h2>
+                            <h3>📦 镜像操作</h3>
+                            <pre><code class="language-bash">docker images                    # 查看镜像
+docker search 镜像名             # 搜索镜像
+docker pull 镜像名:标签          # 拉取镜像
+docker rmi 镜像ID                # 删除镜像
+docker rmi `docker images -q`    # 删除所有镜像</code></pre>
+                            <h3>🏗️ 容器操作</h3>
+                            <pre><code class="language-bash">docker ps                        # 查看运行中容器
+docker ps -a                     # 查看所有容器
+docker run -it --name=容器名 镜像名 /bin/bash    # 交互式启动
+docker run -di --name=容器名 镜像名              # 后台启动
+docker exec -it 容器名 /bin/bash  # 进入容器
+docker stop/start 容器名          # 停止/启动容器
+docker rm 容器名                  # 删除容器
+docker cp 文件 容器名:路径         # 复制文件</code></pre>
+                            <h3>📂 常用参数</h3>
+                            <ul>
+                                <li><code>-i</code>: 交互式</li>
+                                <li><code>-t</code>: 终端</li>
+                                <li><code>-d</code>: 后台运行</li>
+                                <li><code>-p 8080:80</code>: 端口映射</li>
+                                <li><code>-v /host:/container</code>: 目录挂载</li>
+                                <li><code>--name</code>: 容器名称</li>
+                                <li><code>-e KEY=VALUE</code>: 环境变量</li>
+                            </ul>
+                            <hr>
+                            <h2>🌐 应用部署</h2>
+                            <h3>🗄️ 数据库</h3>
+                            <pre><code class="language-bash"># MySQL
+docker run -di --name=mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=密码 mysql:5.7
+
+# Redis
+docker run -di --name=redis -p 6379:6379 redis
+
+# PostgreSQL
+docker run -di --name=postgres -p 5432:5432 -e POSTGRES_PASSWORD=密码 postgres:13</code></pre>
+                            <h3>🌍 Web服务</h3>
+                            <pre><code class="language-bash"># Nginx
+docker run -di --name=nginx -p 80:80 -v /usr/local/nginx:/etc/nginx nginx
+
+# Tomcat
+docker run -di --name=tomcat -p 8080:8080 tomcat:9</code></pre>
+                            <hr>
+                            <h2>📝 Dockerfile</h2>
+                            <h3>🏗️ 基本结构</h3>
+                            <pre><code class="language-dockerfile">FROM node:16-alpine          # 基础镜像
+WORKDIR /app                 # 工作目录
+COPY package*.json ./        # 复制文件
+RUN npm install              # 安装依赖
+COPY . .                     # 复制代码
+EXPOSE 3000                  # 暴露端口
+CMD [&quot;node&quot;, &quot;app.js&quot;]       # 启动命令</code></pre>
+                            <h3>📋 常用指令</h3>
+                            <ul>
+                                <li><code>FROM</code>: 基础镜像</li>
+                                <li><code>WORKDIR</code>: 工作目录</li>
+                                <li><code>COPY</code>: 复制文件</li>
+                                <li><code>ADD</code>: 复制文件(支持解压)</li>
+                                <li><code>RUN</code>: 执行命令</li>
+                                <li><code>ENV</code>: 环境变量</li>
+                                <li><code>EXPOSE</code>: 暴露端口</li>
+                                <li><code>CMD</code>: 启动命令</li>
+                                <li><code>ENTRYPOINT</code>: 入口点</li>
+                            </ul>
+                            <h3>🔧 构建镜像</h3>
+                            <pre><code class="language-bash">docker build -t 镜像名:标签 .
+docker build -f Dockerfile文件 -t 镜像名 .</code></pre>
+                            <hr>
+                            <h2>🐙 Docker Compose</h2>
+                            <h3>📄 基本格式</h3>
+                            <pre><code class="language-yaml">version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - &quot;3000:3000&quot;
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - db
+  
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_PASSWORD=密码
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:</code></pre>
+                            <h3>⚡ 常用命令</h3>
+                            <pre><code class="language-bash">docker-compose up -d           # 后台启动
+docker-compose down             # 停止删除
+docker-compose up -d --build    # 重新构建启动
+docker-compose logs             # 查看日志
+docker-compose exec web bash    # 进入容器
+docker-compose ps               # 查看状态</code></pre>
+                            <hr>
+                            <h2>💾 备份迁移</h2>
+                            <pre><code class="language-bash"># 容器保存为镜像
+docker commit 容器名 新镜像名
+
+# 导出镜像
+docker save -o 镜像.tar 镜像名
+
+# 导入镜像
+docker load -i 镜像.tar</code></pre>
+                            <h2>📝Docker-compose V2</h2>
+                            <p>最近一直打算把网站打包，用docker-compose部署，发现docker-compose更新了于是补一个ubuntu安装docker-compose v2的步骤</p>
+                            <pre><code class="language-bash"># 1. 下载最新稳定版 Compose V2（Linux x86_64 架构，适配绝大多数服务器）
+sudo curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+
+# 2. 给二进制文件添加执行权限
+sudo chmod +x /usr/local/bin/docker-compose
+
+# 3. （可选）创建软链接，确保系统能全局识别命令（部分系统需要）
+sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+
+# 4. 验证安装是否成功（显示 V2 版本即可，比如 v2.29.2）
+docker-compose --version</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

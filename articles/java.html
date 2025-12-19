@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java 环境配置指南 - 我的个人博客</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/markdown.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>我的个人博客</h1>
+            <nav>
+                <span><a href="../index.html" class="no-underline">首页</a></span>
+            </nav>
+        </header>
+
+        <main>
+            <div class="messages-list">
+                <div class="messages-header">
+                    <h3>Java 环境配置指南</h3>
+                    <a href="../index.html" class="btn">返回首页</a>
+                </div>
+
+                <div class="message-item">
+                    <div class="message-header">
+                        <span class="username">技术分享</span>
+                        <span class="time">2025-12-20</span>
+                    </div>
+                    <div class="message-content">
+                        <div class="markdown-content">
+                            <h2>🔧 环境变量配置</h2>
+                            <h3>1. 新建JAVA_HOME环境变量</h3>
+                            <ul>
+                                <li><strong>变量名</strong>: <code>JAVA_HOME</code></li>
+                                <li><strong>变量值</strong>: Java安装路径（例如：<code>C:\Program Files\Java\jdk-17.0.2</code>）
+                                </li>
+                            </ul>
+                            <h3>2. 配置Path环境变量</h3>
+                            <p>在系统环境变量<code>Path</code>中添加以下路径：</p>
+                            <pre><code>%JAVA_HOME%\bin</code></pre>
+                            <hr>
+                            <h2>💡 配置步骤详解</h2>
+                            <h3>Windows系统配置步骤：</h3>
+                            <ol>
+                                <li><strong>打开环境变量设置</strong>
+                                    <ul>
+                                        <li>右键点击"此电脑" → "属性" → "高级系统设置"</li>
+                                        <li>点击"环境变量"按钮</li>
+                                    </ul>
+                                </li>
+                                <li><strong>配置JAVA_HOME</strong>
+                                    <ul>
+                                        <li>在"系统变量"区域点击"新建"</li>
+                                        <li>变量名：<code>JAVA_HOME</code></li>
+                                        <li>变量值：你的Java安装路径</li>
+                                    </ul>
+                                </li>
+                                <li><strong>配置Path变量</strong>
+                                    <ul>
+                                        <li>找到并选中"Path"变量，点击"编辑"</li>
+                                        <li>点击"新建"，添加：<code>%JAVA_HOME%\bin</code></li>
+                                    </ul>
+                                </li>
+                                <li><strong>验证配置</strong>
+                                    <ul>
+                                        <li>打开命令提示符(CMD)</li>
+                                        <li>输入 <code>java -version</code> 查看Java版本</li>
+                                        <li>输入 <code>javac -version</code> 查看编译器版本</li>
+                                    </ul>
+                                </li>
+                            </ol>
+                            <hr>
+                            <h2>🚀 双击打开.jar文件</h2>
+                            <p>注册表打开</p>
+                            <pre><code>\HKEY_CLASSES_ROOT\Applications\javaw.exe\shell\open\command</code></pre>
+                            <h2>✅ 验证方法</h2>
+                            <p>在命令提示符中运行以下命令验证配置是否成功：</p>
+                            <pre><code class="language-bash"># 检查Java版本
+java -version
+
+# 检查Java编译器版本
+javac -version
+
+# 检查JAVA_HOME环境变量
+echo %JAVA_HOME%</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>
