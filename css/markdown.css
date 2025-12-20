@@ -19,7 +19,6 @@
     background: linear-gradient(0deg, #64b5f6 0%, #bbdefb 99%);
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 10px rgba(100, 181, 246, 0.4);
 }
 
 .markdown-content h1 {
@@ -59,7 +58,6 @@
 .markdown-content a:hover {
     color: #bbdefb;
     border-bottom: 1px solid #bbdefb;
-    text-shadow: 0 0 10px rgba(100, 181, 246, 0.6);
 }
 
 .markdown-content strong {
@@ -68,7 +66,6 @@
     background: linear-gradient(0deg, #64b5f6 0%, #bbdefb 99%);
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 5px rgba(100, 181, 246, 0.6);
 }
 
 .markdown-content em {

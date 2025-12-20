@@ -57,8 +57,10 @@ header {
     position: relative;
     display: flex;
     align-items: center;
-    justify-content: center;
-    height: 80px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 80px;
     background: linear-gradient(135deg,
             rgba(13, 27, 42, 0.95) 0%,
             rgba(27, 38, 59, 0.9) 50%,
@@ -68,6 +70,7 @@ header {
     margin: 0;
     width: 100%;
     margin-bottom: 30px;
+    padding: 10px 30px;
 }
 
 header h1 {
@@ -77,19 +80,21 @@ header h1 {
     background-clip: text;
     -webkit-text-fill-color: transparent;
     text-shadow: 0 0 20px rgba(100, 181, 246, 0.5);
-    position: relative;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    flex-grow: 0;
+    text-align: center;
+    white-space: nowrap;
 }
 
-
-
 nav {
-    position: absolute;
-    top: 20px;
-    right: 30px;
     display: flex;
     gap: 20px;
     align-items: center;
     font-size: 16px;
+    z-index: 10;
+    position: relative;
 }
 
 nav span {
@@ -125,7 +130,114 @@ nav span {
     font-size: 14px;
 }
 
-/* Button Styles */
+/* 动态搜索框样式 */
+.search-wrapper {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    transition: all 0.3s ease;
+}
+
+.search-wrapper.expanded {
+    width: 200px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+    background: transparent;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    font-size: 28px;
+}
+
+.search-wrapper.expanded .search-icon {
+    transform: translateX(160px);
+    border-radius: 50%;
+    background: transparent;
+    box-shadow: none;
+}
+
+.search-input {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 40px;
+    padding: 8px 50px 8px 20px;
+    background: rgba(13, 27, 42, 0.8);
+    border: none;
+    border-radius: 20px;
+    font-size: 14px;
+    color: #fff;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 1;
+}
+
+.search-wrapper.expanded .search-input {
+    opacity: 1;
+}
+
+.search-input:focus {
+    outline: none;
+    background: rgba(21, 40, 65, 0.8);
+}
+
+/* 分类筛选样式 */
+.category-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(100, 181, 246, 0.3);
+}
+
+.category-btn {
+    background: linear-gradient(135deg,
+            rgba(100, 181, 246, 0.2) 0%,
+            rgba(66, 165, 245, 0.3) 50%,
+            rgba(100, 181, 246, 0.2) 100%);
+    border: 1px solid rgba(100, 181, 246, 0.4);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.category-btn:hover {
+    background: linear-gradient(135deg,
+            rgba(100, 181, 246, 0.3) 0%,
+            rgba(66, 165, 245, 0.4) 50%,
+            rgba(100, 181, 246, 0.3) 100%);
+    box-shadow: 0 0 15px rgba(100, 181, 246, 0.5);
+    transform: translateY(-1px);
+    border-color: rgba(100, 181, 246, 0.6);
+}
+
+.category-btn.active {
+    background: linear-gradient(135deg,
+            rgba(33, 150, 243, 0.4),
+            rgba(3, 169, 244, 0.3));
+    transform: translateY(-2px);
+    border-color: rgba(100, 181, 246, 0.8);
+}
+
 .btn {
     background: linear-gradient(135deg,
             rgba(100, 181, 246, 0.2) 0%,
@@ -427,13 +539,7 @@ nav span {
     cursor: pointer;
 }
 
-.message-item:hover {
-    background: linear-gradient(135deg,
-            rgba(100, 181, 246, 0.08) 0%,
-            rgba(66, 165, 245, 0.12) 50%,
-            rgba(100, 181, 246, 0.08) 100%);
-    transform: translateX(5px);
-}
+
 
 .message-item:last-child {
     border-bottom: none;
@@ -526,11 +632,51 @@ nav span {
         flex-direction: column;
         text-align: center;
         gap: 15px;
+        padding: 10px;
+        position: relative;
+    }
+
+    header h1 {
+        position: static;
+        transform: none;
+        left: auto;
     }
 
     nav {
-        flex-direction: column;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
         gap: 10px;
+    }
+
+    /* 移动端搜索框样式 */
+    .search-wrapper {
+        width: 30px;
+        height: 30px;
+        top: 15px;
+        right: 15px;
+    }
+
+    .search-wrapper.expanded {
+        width: 100%;
+        max-width: 150px;
+    }
+
+    .search-icon {
+        width: 30px;
+        height: 30px;
+        font-size: 24px;
+    }
+
+    .search-wrapper.expanded .search-icon {
+        transform: translateX(calc(100% - 30px));
+    }
+
+    .search-input {
+        height: 30px;
+        padding: 8px 40px 8px 15px;
+        font-size: 12px;
+        border: none;
     }
 
     .form-container {
@@ -541,5 +687,9 @@ nav span {
     .message-form,
     .messages-list {
         padding: 15px;
+    }
+
+    .category-filter {
+        justify-content: center;
     }
 }

@@ -11,10 +11,15 @@
 <body>
     <div class="container">
         <header>
-            <h1>我的个人博客</h1>
             <nav>
                 <span><a href="https://taoi.dpdns.org/" class="no-underline">首页</a></span>
             </nav>
+            <h1>我的个人博客</h1>
+            <!-- 动态搜索框 -->
+            <div class="search-wrapper">
+                <div class="search-icon">&#8981;</div>
+                <input type="text" class="search-input">
+            </div>
         </header>
 
         <main>
@@ -24,8 +29,16 @@
                     <h3>文章列表</h3>
                 </div>
 
+                <!-- 分类导航 -->
+                <div class="category-filter">
+                    <button class="category-btn active" data-category="all">全部</button>
+                    <button class="category-btn" data-category="技术分享">技术分享</button>
+                    <button class="category-btn" data-category="编程练习">编程练习</button>
+                    <button class="category-btn" data-category="开发工具">开发工具</button>
+                </div>
+
                 <!-- 文章1 -->
-                <div class="message-item">
+                <div class="message-item" data-category="技术分享">
                     <a href="articles/java.html" class="message-link">
                         <div class="message-header">
                             <span class="username">技术分享</span>
@@ -39,7 +52,7 @@
                 </div>
 
                 <!-- 文章2 -->
-                <div class="message-item">
+                <div class="message-item" data-category="技术分享">
                     <a href="articles/docker.html" class="message-link">
                         <div class="message-header">
                             <span class="username">技术分享</span>
@@ -53,7 +66,7 @@
                 </div>
 
                 <!-- 文章3
-                <div class="message-item">
+                <div class="message-item" data-category="技术分享">
                     <a href="articles/test-article.html" class="message-link">
                         <div class="message-header">
                             <span class="username">技术分享</span>
@@ -67,7 +80,7 @@
                 </div>
 
                 文章4
-                <div class="message-item">
+                <div class="message-item" data-category="技术分享">
                     <a href="articles/model.html" class="message-link">
                         <div class="message-header">
                             <span class="username">技术分享</span>
@@ -81,7 +94,7 @@
                 </div> -->
 
                 <!-- 文章5 -->
-                <div class="message-item">
+                <div class="message-item" data-category="技术分享">
                     <a href="articles/c.html" class="message-link">
                         <div class="message-header">
                             <span class="username">技术分享</span>
@@ -95,7 +108,7 @@
                 </div>
 
                 <!-- 文章6 -->
-                <div class="message-item">
+                <div class="message-item" data-category="技术分享">
                     <a href="articles/python.html" class="message-link">
                         <div class="message-header">
                             <span class="username">技术分享</span>
@@ -109,7 +122,7 @@
                 </div>
 
                 <!-- 文章7 -->
-                <div class="message-item">
+                <div class="message-item" data-category="技术分享">
                     <a href="articles/mysql.html" class="message-link">
                         <div class="message-header">
                             <span class="username">技术分享</span>
@@ -123,7 +136,7 @@
                 </div>
 
                 <!-- 文章8 -->
-                <div class="message-item">
+                <div class="message-item" data-category="技术分享">
                     <a href="articles/php.html" class="message-link">
                         <div class="message-header">
                             <span class="username">技术分享</span>
@@ -137,7 +150,7 @@
                 </div>
 
                 <!-- 文章9 -->
-                <div class="message-item">
+                <div class="message-item" data-category="技术分享">
                     <a href="articles/sqli.html" class="message-link">
                         <div class="message-header">
                             <span class="username">技术分享</span>
@@ -151,7 +164,7 @@
                 </div>
 
                 <!-- 文章10 -->
-                <div class="message-item">
+                <div class="message-item" data-category="技术分享">
                     <a href="articles/tkinter.html" class="message-link">
                         <div class="message-header">
                             <span class="username">技术分享</span>
@@ -165,7 +178,7 @@
                 </div>
 
                 <!-- 文章11 -->
-                <div class="message-item">
+                <div class="message-item" data-category="技术分享">
                     <a href="articles/xss-labs.html" class="message-link">
                         <div class="message-header">
                             <span class="username">技术分享</span>
@@ -179,7 +192,7 @@
                 </div>
                 <!-- 
                 文章12
-                <div class="message-item">
+                <div class="message-item" data-category="技术分享">
                     <a href="articles/docker-simple.html" class="message-link">
                         <div class="message-header">
                             <span class="username">技术分享</span>
@@ -193,7 +206,7 @@
                 </div> -->
 
                 <!-- 文章13 -->
-                <div class="message-item">
+                <div class="message-item" data-category="技术分享">
                     <a href="articles/ensp.html" class="message-link">
                         <div class="message-header">
                             <span class="username">技术分享</span>
@@ -207,7 +220,7 @@
                 </div>
 
                 <!-- 文章14 -->
-                <div class="message-item">
+                <div class="message-item" data-category="技术分享">
                     <a href="articles/font.html" class="message-link">
                         <div class="message-header">
                             <span class="username">技术分享</span>
@@ -221,7 +234,7 @@
                 </div>
 
                 <!-- 文章15 -->
-                <div class="message-item">
+                <div class="message-item" data-category="技术分享">
                     <a href="articles/vscode-config.html" class="message-link">
                         <div class="message-header">
                             <span class="username">技术分享</span>
@@ -235,7 +248,7 @@
                 </div>
 
                 <!-- 文章16 -->
-                <div class="message-item">
+                <div class="message-item" data-category="技术分享">
                     <a href="articles/vscode.html" class="message-link">
                         <div class="message-header">
                             <span class="username">技术分享</span>
@@ -249,7 +262,7 @@
                 </div>
 
                 <!-- 新增文章1 -->
-                <div class="message-item">
+                <div class="message-item" data-category="技术分享">
                     <a href="articles/git.html" class="message-link">
                         <div class="message-header">
                             <span class="username">技术分享</span>
@@ -263,7 +276,7 @@
                 </div>
 
                 <!-- 新增文章2 -->
-                <div class="message-item">
+                <div class="message-item" data-category="编程练习">
                     <a href="articles/乘法口诀表.html" class="message-link">
                         <div class="message-header">
                             <span class="username">编程练习</span>
@@ -277,7 +290,7 @@
                 </div>
 
                 <!-- 新增文章3 -->
-                <div class="message-item">
+                <div class="message-item" data-category="开发工具">
                     <a href="articles/编辑器编译器.html" class="message-link">
                         <div class="message-header">
                             <span class="username">开发工具</span>
@@ -293,6 +306,98 @@
             </div>
         </main>
     </div>
+
+    <script>
+        // 分类功能实现
+        const categoryButtons = document.querySelectorAll('.category-btn');
+        const messageItems = document.querySelectorAll('.message-item');
+
+        categoryButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // 移除所有按钮的active类
+                categoryButtons.forEach(btn => btn.classList.remove('active'));
+                // 为当前按钮添加active类
+                button.classList.add('active');
+
+                const category = button.getAttribute('data-category');
+
+                // 显示/隐藏文章
+                messageItems.forEach(item => {
+                    if (category === 'all' || item.getAttribute('data-category') === category) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // 搜索功能实现
+        const searchWrapper = document.querySelector('.search-wrapper');
+        const searchIcon = document.querySelector('.search-icon');
+        const searchInput = document.querySelector('.search-input');
+
+        // 点击图标展开搜索框
+        searchIcon.addEventListener('click', () => {
+            // 如果已经展开，则执行搜索
+            if (searchWrapper.classList.contains('expanded')) {
+                performSearch();
+            } else {
+                // 否则展开搜索框
+                searchWrapper.classList.add('expanded');
+                setTimeout(() => {
+                    searchInput.focus();
+                }, 300); // 等待动画完成后聚焦
+            }
+        });
+
+        // 回车键执行搜索
+        searchInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // 点击外部区域收起搜索框
+        document.addEventListener('click', (e) => {
+            // 检查点击的元素是否在搜索框内部
+            if (!searchWrapper.contains(e.target) && searchWrapper.classList.contains('expanded')) {
+                searchWrapper.classList.remove('expanded');
+                searchInput.value = '';
+                // 清空搜索结果，显示所有文章
+                messageItems.forEach(item => {
+                    item.style.display = 'block';
+                });
+            }
+        });
+
+        function performSearch() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+
+            // 如果搜索词为空，显示所有文章
+            if (searchTerm === '') {
+                messageItems.forEach(item => {
+                    item.style.display = 'block';
+                });
+                return;
+            }
+
+            // 搜索匹配的文章
+            messageItems.forEach(item => {
+                const title = item.querySelector('h4').textContent.toLowerCase();
+                const content = item.querySelector('p').textContent.toLowerCase();
+
+                if (title.includes(searchTerm) || content.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // 实时搜索（可选）
+        // searchInput.addEventListener('input', performSearch);
+    </script>
 </body>
 
 </html>
