@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git 使用指南 - 我的个人博客</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/markdown.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>我的个人博客</h1>
+            <nav>
+                <span><a href="../index.html" class="no-underline">首页</a></span>
+            </nav>
+        </header>
+
+        <main>
+            <div class="messages-list">
+                <div class="messages-header">
+                    <h3>Git 使用指南</h3>
+                    <a href="../index.html" class="btn">返回首页</a>
+                </div>
+
+                <div class="message-item">
+                    <div class="message-header">
+                        <span class="username">技术分享</span>
+                        <span class="time">2025-12-20</span>
+                    </div>
+                    <div class="message-content">
+                        <div class="markdown-content">
+                            <h4>配置git</h4>
+                            <pre><code class="language-bash">git config --global user.name "你的用户名"
+git config --global user.email "你的邮箱"</code></pre>
+
+                            <h4>初始化仓库</h4>
+                            <pre><code class="language-bash">git init</code></pre>
+
+                            <h4>放到暂存区</h4>
+                            <pre><code class="language-bash">git add .</code></pre>
+
+                            <h4>把文件放到本地git仓库</h4>
+                            <pre><code class="language-bash">git  commit -m "描述"</code></pre>
+
+                            <h4>关联仓库</h4>
+                            <pre><code class="language-bash">git remote add origin https://xxx/.git</code></pre>
+
+                            <h4>如果远程仓库非空</h4>
+                            <pre><code class="language-bash">git pull origin main --allow-unrelated-histories</code></pre>
+
+                            <h4>提交到远程git仓库</h4>
+                            <pre><code class="language-bash">git push -u origin main</code></pre>
+
+                            <h4>后续git push即可</h4>
+
+                            <h3>git ssh key</h3>
+
+                            <h4>1.生成 SSH 密钥（替换为你的 GitHub 邮箱）</h4>
+                            <pre><code class="language-bash">ssh-keygen -t ed25519 -C "你的GitHub注册邮箱@xxx.com"</code></pre>
+
+                            <h4>2.查看sshkey</h4>
+                            <pre><code class="language-bash">type C:\Users\你的用户名\.ssh\id_ed25519.pub</code></pre>
+
+                            <h4>3.登录 GitHub → 点击右上角头像 → Settings → SSH and GPG keys → New SSH key；</h4>
+
+                            <h4>4.Title 填任意名称（比如 Windows），Key 粘贴刚才复制的公钥内容，点击 Add SSH key。</h4>
+
+                            <h4>5.修改本地仓库的远程地址为 SSH 方式</h4>
+                            <pre><code class="language-bash">git remote remove origin
+# 添加 SSH 格式的远程地址（替换为你的仓库）
+git remote add origin git@github.com:Tao-stu/blog.git
+# 验证远程地址是否正确
+git remote -v</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

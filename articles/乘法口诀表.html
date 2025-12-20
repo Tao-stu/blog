@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>乘法口诀表 - 我的个人博客</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/markdown.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>我的个人博客</h1>
+            <nav>
+                <span><a href="../index.html" class="no-underline">首页</a></span>
+            </nav>
+        </header>
+
+        <main>
+            <div class="messages-list">
+                <div class="messages-header">
+                    <h3>乘法口诀表</h3>
+                    <a href="../index.html" class="btn">返回首页</a>
+                </div>
+
+                <div class="message-item">
+                    <div class="message-header">
+                        <span class="username">技术分享</span>
+                        <span class="time">2025-12-20</span>
+                    </div>
+                    <div class="message-content">
+                        <div class="markdown-content">
+                            <h3>口诀</h3>
+
+                            <h4>外层控制列，内层控制行，外层乘内层，外层再换行，while计数器，末尾要自加</h4>
+
+                            <h3>两层for嵌套</h3>
+
+                            <pre><code class="language-python">for i in range(1,10):
+    for j in range(1,i+1):
+        print(f'{j}*{i}={j*i}',end=" ")
+    print()</code></pre>
+
+                            <pre><code class="language-php">&lt;?php
+for ($i = 1; $i <= 9; $i++) {
+    for ($j = 1; $j <= $i; $j++) {
+        $k = $i * $j;
+        echo "$j*$i=$k ";
+    }
+    echo "\n";
+}
+?&gt;</code></pre>
+
+                            <pre><code class="language-c">#include&lt;stdio.h&gt;
+int main(){
+    for (int i = 1; i <= 9; i++){
+        for (int j = 1; j <= i; j++) {
+            printf("%d*%d=%d ", j, i, i * j);
+        }
+        printf("\n");
+    }
+        return 0;
+}</code></pre>
+
+                            <h3>两层while嵌套</h3>
+
+                            <pre><code class="language-python">i=1
+while(i <= 9):
+    j=1
+    while(j<=i):
+        print(f'{j}*{i}={j*i}',end=" ")
+        j+=1
+    print()
+    i+=1</code></pre>
+
+                            <pre><code class="language-php">&lt;?php
+$i = 1;
+while ($i <= 9) {
+    $j = 1;
+    while ($j <= $i) {
+        $k = $i * $j;
+        echo "$j*$i=$k ";
+        $j++;
+    }
+    $i++;
+    echo "\n";
+}
+?&gt;</code></pre>
+
+                            <pre><code class="language-c">#include &lt;stdio.h&gt;
+int main() 
+{
+    int i=1;
+    while(i<=9){
+        int j=1;
+        while(j<=i){
+            printf("%d*%d=%d ",j,i,i*j);
+            j++;
+        }
+        printf("\n");
+        i++;
+    }
+    return 0;
+}</code></pre>
+
+                            <h3>外层for内层while</h3>
+
+                            <pre><code class="language-python">for i in range(1,10):
+    j=1
+    while(j<=i):
+        print(f'{j}*{i}={j*i}',end=" ")
+        j+=1
+    print()</code></pre>
+
+                            <pre><code class="language-php">&lt;?php
+for ($i = 1; $i <= 9; $i++) {
+    $j = 1;
+    while ($j <= $i) {
+        $k = $i * $j;
+        echo "$j*$i=$k ";
+        $j++;
+    }
+    echo "\n";
+}
+?&gt;</code></pre>
+
+                            <pre><code class="language-c">#include &lt;stdio.h&gt;
+int main() 
+{
+    for (int i=1;i<=9;i++){
+        int j=1;
+        while(j<=i){
+            printf("%d*%d=%d ",j,i,i*j);
+            j++;
+        }
+        printf("\n");
+    }
+    return 0;
+}</code></pre>
+
+                            <h3>外层while内层for</h3>
+
+                            <pre><code class="language-python">i=1
+while(i <= 9):
+    for j in range(1,i+1):
+        print(f'{j}*{i}={j*i}',end=" ")
+    print()
+    i+=1</code></pre>
+
+                            <pre><code class="language-php">&lt;?php
+$i = 1;
+while ($i <= 9) {
+    for ($j = 1; $j <= $i; $j++) {
+        $k = $i * $j;
+        echo "$j*$i=$k ";
+    }
+    echo "\n";
+    $i++;
+}
+?&gt;</code></pre>
+
+                            <pre><code class="language-c">#include &lt;stdio.h&gt;
+int main() 
+{
+    int i=1;
+    while (i<=9){
+        for (int j=1;j<=i;j++){
+            printf("%d*%d=%d ",j,i,i*j);
+        }
+        printf("\n");
+        i++;
+    }
+    return 0;
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>
